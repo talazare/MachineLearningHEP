@@ -124,6 +124,7 @@ def do_entire_analysis(data_config: dict, data_param: dict, data_param_overwrite
     dohistomassmc = data_config["analysis"]["mc"]["histomass"]
     dohistomassdata = data_config["analysis"]["data"]["histomass"]
     doefficiency = data_config["analysis"]["mc"]["efficiency"]
+    efficiency_resp = data_config["analysis"]["mc"]["efficiency_resp"]
     doresponse = data_config["analysis"]["mc"]["response"]
     dofeeddown = data_config["analysis"]["mc"]["feeddown"]
     dounfolding = data_config["analysis"]["mc"]["dounfolding"]
@@ -401,9 +402,12 @@ def do_entire_analysis(data_config: dict, data_param: dict, data_param_overwrite
         mymultiprocessdata.multi_histomass()
     if doefficiency is True:
         mymultiprocessmc.multi_efficiency()
+    analyze_steps = []
+    if efficiency_resp is True:
+        analyze_steps.append("efficiency")
+        ana_mgr.analyze(*analyze_steps)
     if doresponse is True:
         mymultiprocessmc.multi_response()
-
     # Collect all desired analysis steps
     analyze_steps = []
     if dofit is True:
@@ -411,7 +415,7 @@ def do_entire_analysis(data_config: dict, data_param: dict, data_param_overwrite
     if dosyst is True:
         analyze_steps.append("yield_syst")
     if doeff is True:
-        analyze_steps.append("efficiency")
+        analyze_steps.append("efficiency_folded")
     if dojetstudies is True:
         if dofit is False:
             analyze_steps.append("fit")

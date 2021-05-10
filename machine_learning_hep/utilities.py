@@ -36,6 +36,7 @@ from ROOT import kOpenCircle, kOpenSquare, kOpenDiamond, kOpenCross, kOpenStar, 
 from ROOT import kOpenFourTrianglesX, kOpenDoubleDiamond, kOpenFourTrianglesPlus, kOpenCrossX # pylint: disable=import-error, no-name-in-module
 from ROOT import kFullCircle, kFullSquare, kFullDiamond, kFullCross, kFullStar, kFullThreeTriangles # pylint: disable=import-error, no-name-in-module
 from ROOT import kFullFourTrianglesX, kFullDoubleDiamond, kFullFourTrianglesPlus, kFullCrossX # pylint: disable=import-error, no-name-in-module
+from ROOT import RooUnfoldBayes
 
 def openfile(filename, attr):
     """
@@ -485,6 +486,11 @@ def folding(h_input, response_matrix, h_output):
                         response_matrix(index_x_out, index_x_in)
             h_folded.SetBinContent(a+1, b+1, val)
             h_folded.SetBinError(a+1, b+1, math.sqrt(val_err))
+    return h_folded
+
+def folding_roounfold(h_input, response_matrix, h_output):
+    h_folded = h_output.Clone("h_folded")
+    h_folded = response_matrix.ApplyToTruth(h_input)
     return h_folded
 
 def get_plot_range(val_min, val_max, margin_min, margin_max, logscale=False):

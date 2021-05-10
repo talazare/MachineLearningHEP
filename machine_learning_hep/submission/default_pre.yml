@@ -3,14 +3,14 @@ download:
     activate: false
 conversion:
   mc:
-    activate: true
+    activate: false
   data:
-    activate: true
+    activate: false
 skimming:
   mc:
-    activate: true
+    activate: false
   data:
-    activate: true
+    activate: false
 merging:
   mc:
     activate: true
@@ -55,15 +55,16 @@ mlapplication:
 
 analysis:
   type: YYYY
-  # Do each period separately including merged (true)
+  # Do each period separately including merged (false)
   # Do only merged (false)
-  doperperiod: true
+  doperperiod: false
   data:
     histomass: false
     dojetsystematics: false
   mc:
     histomass: false
     efficiency: false # processer: process_efficiency
+    efficiency_resp: false # analyzer: efficiency
     response: false # processer: process_response
     feeddown: false
     dounfolding: false

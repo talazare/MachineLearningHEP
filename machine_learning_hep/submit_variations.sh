@@ -10,9 +10,13 @@ DB_DEFAULT="$1"
 DB_VARIATION="$2"
 ANALYSIS="$3"
 
-CMD_VAR="python do_variations.py ${DB_DEFAULT} ${DB_VARIATION}"
+
+CMD_VAR="python do_variations.py ${DB_DEFAULT} ${DB_VARIATION} "
+
+echo -e "\n $CMD_VAR"
 
 ${CMD_VAR}
+
 
 # Exit if error.
 if [ ! $? -eq 0 ]; then echo "Error"; exit 1; fi
@@ -39,4 +43,3 @@ else
 fi
 
 exit 0
-
