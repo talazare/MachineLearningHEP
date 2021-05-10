@@ -81,19 +81,6 @@ LcpK0spp:
                    imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0, cos_t_star],
                    [dca_K0s, imp_par_K0s, d_len_K0s, armenteros_K0s, ctau_K0s, cos_p_K0s,
                    imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0, cos_t_star]]
-    # Choose some selected variables for which distributions and correlations should be computed and plotted during ML
-    var_selected: [[dca_K0s, imp_par_K0s, d_len_K0s, armenteros_K0s, ctau_K0s, cos_p_K0s,
-                   imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0, inv_mass, pt_cand],
-                   [dca_K0s, imp_par_K0s, d_len_K0s, armenteros_K0s, ctau_K0s, cos_p_K0s,
-                   imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0, inv_mass, pt_cand],
-                   [dca_K0s, imp_par_K0s, d_len_K0s, armenteros_K0s, ctau_K0s, cos_p_K0s,
-                   imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0, cos_t_star, inv_mass, pt_cand],
-                   [dca_K0s, imp_par_K0s, d_len_K0s, armenteros_K0s, ctau_K0s, cos_p_K0s,
-                   imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0, cos_t_star, inv_mass, pt_cand],
-                   [dca_K0s, imp_par_K0s, d_len_K0s, armenteros_K0s, ctau_K0s, cos_p_K0s,
-                   imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0, cos_t_star, inv_mass, pt_cand],
-                   [dca_K0s, imp_par_K0s, d_len_K0s, armenteros_K0s, ctau_K0s, cos_p_K0s,
-                   imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0, cos_t_star, inv_mass, pt_cand]]
     var_boundaries: [cos_t_star, pt_cand]
     var_correlation:
       - [cos_t_star]
@@ -117,93 +104,95 @@ LcpK0spp:
 
     plot_options:
       prob_cut_scan:
-        pt_K0s:
-          xlim: [0, 1]
-        pt_prong0:
-          xlim: [0, 1]
-        pt_prong1:
-          xlim: [0, 1]
-        pt_prong2:
-          xlim: [0, 1]
-        armenteros_K0s:
-          xlim: [0, 10000]
-          xlabel: "\\mathrm{arm}"
-        nsigTPC_Pr_0:
-          xlim: [-10, 10]
-          xlabel: "n\\sigma_\\mathrm{TPC}(p)"
-        nsigTOF_Pr_0:
-          xlim: [-100, 100]
-          xlabel: "n\\sigma_\\mathrm{TOF}(p)"
-        imp_par_prong0:
-          xlim: [-3, 3]
-          xlabel: "b_p"
-        imp_par_prong1:
-          xlim: [0, 60]
-          xlabel: "b_{\\pi^+}"
-        imp_par_prong2:
-          xlim: [0, 60]
-          xlabel: "b_{\\pi^-}"
-        imp_par_K0s:
-          xlim: [-2, 2]
-          xlabel: "b_{V^0}"
-        dca_K0s:
-            xlim: [0, 0.8]
-            xlabel: "\\mathrm{DCA}(\\pi^+,\\pi^-)"
-        inv_mass_K0s:
-            xlim: [0.45, 0.55]
-            xlabel: "m_\\mathrm{inv}(V^0)"
-        ctau_K0s:
-            xlim: [0, 150]
-            xlabel: "c\\tau(V^0)"
-        d_len_K0s:
-            xlim: [0, 300]
-            xlabel: "d_\\mathrm{len}(V^0)"
-        cos_p_K0s:
-            xlim: [0.997, 1]
-            xlabel: "\\cos\\theta_\\mathrm{point}(V^0)"
         cos_t_star:
-            xlim: [-1, 1]
-            xlabel: "\\cos\\theta^\\star"
-        inv_mass:
-            xlim: [1.9,2.5]
-            xlabel: "m_\\mathrm{inv}(\\mathrm{\\Lambda}^+_\\mathrm{c})"
-
+          xlim:
+            - -1
+            - 1
+        pt_K0s:
+          xlim:
+            - 0
+            - 1
+        pt_prong0:
+          xlim:
+            - 0
+            - 1
+        pt_prong1:
+          xlim:
+            - 0
+            - 1
+        pt_prong2:
+          xlim:
+            - 0
+            - 1
+        nsigTOF_Pr_0:
+          xlim:
+            - -4
+            - 4
+        armenteros_K0s:
+          xlim:
+            - 0
+            - 2
+        signd0:
+          xlim:
+            - 0
+            - 0.3
+        nsigTPC_Pr_0:
+          xlim:
+            - -4
+            - 4
       eff_cut_scan:
-        pt_K0s:
-          xlim: [0, 1]
-        pt_prong0:
-          xlim: [0, 1]
-        pt_prong1:
-          xlim: [0, 1]
-        pt_prong2:
-          xlim: [0, 1]
-        armenteros_K0s:
-          xlim: [0, 10000]
-        nsigTPC_Pr_0:
-          xlim: [-100, 100]
-        nsigTOF_Pr_0:
-          xlim: [-100, 100]
-        imp_par_prong0:
-            xlim: [-3, 3]
-        imp_par_prong1:
-            xlim: [-60, 60]
-        imp_par_prong2:
-            xlim: [-60, 60]
-        imp_par_K0s:
-            xlim: [-2, 2]
-        dca_K0s:
-            xlim: [0, 1.5]
-        inv_mass_K0s:
-            xlim: [0.45, 0.55]
-        ctau_K0s:
-            xlim: [0, 150]
-        d_len_K0s:
-            xlim: [0, 300]
-        cos_p_K0s:
-            xlim: [-1, 1]
         cos_t_star:
-            xlim: [-1, 1]
-
+          xlim:
+            - -1
+            - 1
+        pt_K0s:
+          xlim:
+            - 0
+            - 1
+        pt_prong0:
+          xlim:
+            - 0
+            - 1
+        pt_prong1:
+          xlim:
+            - 0
+            - 1
+        pt_prong2:
+          xlim:
+            - 0
+            - 1
+        inv_mass_K0s:
+          xlim:
+            - 0.
+            - 0.04
+        armenteros_K0s:
+          xlim:
+            - 0
+            - 2
+        signd0:
+          xlim:
+            - 0
+            - 0.3
+        nsigTOF_Pr_0:
+          xlim:
+            - 0
+            - 1000
+        nsigTPC_Pr_0:
+          xlim:
+            - 0
+            - 4
+        imp_par_prong0:
+          xlim:
+            - 0
+            - 0.3
+        imp_par_K0s:
+          xlim:
+            - 0
+            - 1.
+        dca_K0s:
+          xlim:
+            - 0
+            - 1.
 
   files_names:
     namefile_unmerged_tree: AnalysisResults.root
@@ -230,15 +219,9 @@ LcpK0spp:
       maxfiles: [-1,-1,-1] #list of periods
       chunksizeunp: [100,100,100] #list of periods
       chunksizeskim: [100,100,100] #list of periods
-      fracmerge:
-        - [0.02, 0.03, 0.1, 0.8, 1., 1.]  #list of periods
-        - [0.02, 0.03, 0.1, 0.8, 1., 1.]  #list of periods
-        - [0.02, 0.03, 0.1, 0.8, 1., 1.]  #list of periods
+      fracmerge: [0.1, 0.1, 0.1]  #list of periods
       seedmerge: [12,12,12] #list of periods
       period: [LHC16pp,LHC17pp,LHC18pp] #list of periods
-      select_children: [["child_1", "child_2","child_3", "child_4","child_5","child_6","child_7","child_8","child_9","child_10"],
-                        ["child_11", "child_12","child_13", "child_14","child_15","child_16","child_17","child_18","child_19","child_20", "child_21"],
-                        ["child_22","child_23", "child_24","child_25", "child_26","child_27","child_28","child_29","child_30","child_31","child_32", "child_33", "child_34", "child_35"]] # select children explicitly corresponding to each year
       unmerged_tree_dir: [/data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged,
                           /data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged,
                           /data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged] #list of periods
@@ -289,7 +272,6 @@ LcpK0spp:
       mc: null
     nbkg: 500000
     nsig: 500000
-    equalise_sig_bkg: True
     sampletagforsignal: 1
     sampletagforbkg: 0
     sel_sigml: ismcprompt == 1
@@ -300,11 +282,6 @@ LcpK0spp:
     test_frac: 0.2
     binmin: [1,2,4,6,8,12] #list of nbins
     binmax: [2,4,6,8,12,24] #list of nbins
-    mask_values:
-      - column: nsigTOF_Pr_0
-        find_by_value: -999
-        mask_with: Null
-
     mltype: BinaryClassification
     ncorescrossval: 10
     mlplot: /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/mlplot # to be removed
@@ -325,7 +302,7 @@ LcpK0spp:
       bkg_function: pol2 # fit function for bkg (among TH1 predefined fit functions, e.g. expo, pol1, pol2, ...)
       save_fit: True # save bkg fits with the various cuts on ML output
       raahp: [1,1,1,1,1,1] #list of nbins
-      presel_gen_eff: "abs(y_cand) < 0.5 and abs(z_vtx_gen) < 10"
+      presel_gen_eff: "abs(y_cand) < 0.8 and abs(z_vtx_gen) < 10"
 
   mlapplication:
     data:
@@ -386,7 +363,7 @@ LcpK0spp:
       sel_an_binmin: [1,2,4,6,8,12] #list of pt nbins
       sel_an_binmax: [2,4,6,8,12,24] #list of pt nbins
       binning_matching: [0,1,2,3,4,5] #list of pt nbins
-      presel_gen_eff: "abs(y_cand) < 0.5 and abs(z_vtx_gen) < 10"
+      presel_gen_eff: "abs(y_cand) < 0.8 and abs(z_vtx_gen) < 10"
       evtsel: is_ev_rej==0
       triggersel:
         data: "trigger_hasbit_INT7==1"
@@ -489,7 +466,7 @@ LcpK0spp:
       sel_an_binmin: [1,2,4,6,8,12] #list of pt nbins
       sel_an_binmax: [2,4,6,8,12,24] #list of pt nbins
       binning_matching: [0,1,2,3,4,5] #list of pt nbins
-      presel_gen_eff: "abs(y_cand) < 0.5 and abs(z_vtx_gen) < 10"
+      presel_gen_eff: "abs(y_cand) < 0.8 and abs(z_vtx_gen) < 10"
       evtsel: is_ev_rej==0
       #INEL>0 requirement. Takes a long time, do this once and copy masshistograms when rerunning is better (disable for cut variation)
       apply_inel0_sel: [false, true, true, true, true]

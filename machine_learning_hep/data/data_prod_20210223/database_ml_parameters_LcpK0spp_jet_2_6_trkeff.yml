@@ -1,4 +1,4 @@
-#############################################################################
+############################################################################
 ##  © Copyright CERN 2018. All rights not expressly granted are reserved.  ##
 ##                 Author: Gian.Michele.Innocenti@cern.ch                  ##
 ## This program is free software: you can redistribute it and/or modify it ##
@@ -55,7 +55,9 @@ LcpK0spp:
               cos_p_K0s, pt_prong0, pt_prong1, pt_prong2, imp_par_prong0, imp_par_prong1, imp_par_prong2,
               inv_mass, pt_cand, phi_cand, eta_cand, inv_mass_K0s, pt_K0s, cand_type, y_cand,
               run_number, ev_id, ev_id_ext, nsigTPC_Pr_0, nsigTOF_Pr_0,
-              spdhits_prong0, spdhits_prong1, spdhits_prong2, pt_gen_cand,
+              spdhits_prong0, spdhits_prong1, spdhits_prong2,
+              pt_jet, eta_jet, phi_jet, delta_eta_jet, delta_phi_jet, delta_r_jet,
+              pt_gen_jet, eta_gen_jet, phi_gen_jet, delta_eta_gen_jet, delta_phi_gen_jet, delta_r_gen_jet, pt_gen_cand,
               p_prong0, p_prong1, p_prong2]
     var_evt:
       data: [centrality, z_vtx_reco, n_vtx_contributors, n_tracks, is_ev_rej, run_number,
@@ -67,7 +69,7 @@ LcpK0spp:
               trigger_hasbit_HighMultV0, trigger_hasclass_INT7, trigger_hasclass_HighMultSPD,
               trigger_hasclass_HighMultV0, n_tracklets_corr, v0m, v0m_eq, v0m_corr, v0m_eq_corr,
               mult_gen, mult_gen_v0a, mult_gen_v0c, perc_v0m, is_ev_rej_INT7, n_tracklets_corr_shm]
-    var_gen: [y_cand, pt_cand, eta_cand, phi_cand, cand_type, run_number, ev_id, ev_id_ext]
+    var_gen: [y_cand, pt_cand, eta_cand, phi_cand, cand_type, pt_jet, eta_jet, phi_jet, delta_eta_jet, delta_phi_jet, delta_r_jet, run_number, ev_id, ev_id_ext]
     var_evt_match: [run_number, ev_id, ev_id_ext]
     var_training: [[dca_K0s, imp_par_K0s, d_len_K0s, armenteros_K0s, ctau_K0s, cos_p_K0s,
                    imp_par_prong0, imp_par_prong1, imp_par_prong2, inv_mass_K0s, nsigTOF_Pr_0, nsigTPC_Pr_0],
@@ -231,13 +233,13 @@ LcpK0spp:
       chunksizeunp: [100,100,100] #list of periods
       chunksizeskim: [100,100,100] #list of periods
       fracmerge:
-        - [0.02, 0.03, 0.1, 0.8, 1., 1.]  #list of periods
-        - [0.02, 0.03, 0.1, 0.8, 1., 1.]  #list of periods
-        - [0.02, 0.03, 0.1, 0.8, 1., 1.]  #list of periods
+        - [0.02, 0.03, 0.1, 0.4, 0.52, 0.8]  #list of periods
+        - [0.02, 0.03, 0.1, 0.4, 0.52, 0.8]  #list of periods
+        - [0.02, 0.03, 0.1, 0.4, 0.52, 0.8]  #list of periods
       seedmerge: [12,12,12] #list of periods
       period: [LHC16pp,LHC17pp,LHC18pp] #list of periods
       select_children: [["child_1", "child_2","child_3", "child_4","child_5","child_6","child_7","child_8","child_9","child_10"],
-                        ["child_11", "child_12","child_13", "child_14","child_15","child_16","child_17","child_18","child_19","child_20", "child_21"],
+                        ["child_11", "child_12","child_13", "child_14","child_15","child_16","child_17","child_18","child_19","child_20", "child_21"], 
                         ["child_22","child_23", "child_24","child_25", "child_26","child_27","child_28","child_29","child_30","child_31","child_32", "child_33", "child_34", "child_35"]] # select children explicitly corresponding to each year
       unmerged_tree_dir: [/data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged,
                           /data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged,
@@ -264,21 +266,21 @@ LcpK0spp:
       fracmerge: [1.0,1.0,1.0]  #list of periods
       seedmerge: [12,12,12] #list of periods
       period: [LHC16pp,LHC17pp,LHC18pp] #list of periods
-      select_children: [["child_4"], ["child_5"], ["child_6"]] # select children explicitly corresponding to each year
-      unmerged_tree_dir: [/data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_sim/595_20210224-0854/merged,
-                          /data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_sim/595_20210224-0854/merged,
-                          /data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_sim/595_20210224-0854/merged] #list of periods
-      pkl: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodLcpK0s/595_20210224-0854/pkl,
-            /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodLcpK0s/595_20210224-0854/pkl,
-            /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodLcpK0s/595_20210224-0854/pkl] #list of periods
-      pkl_skimmed: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodLcpK0s/595_20210224-0854/pklsk,
-                    /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodLcpK0s/595_20210224-0854/pklsk,
-                    /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodLcpK0s/595_20210224-0854/pklsk] #list of periods
-      pkl_skimmed_merge_for_ml: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodLcpK0s/595_20210224-0854/pklskml,
-                                 /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodLcpK0s/595_20210224-0854/pklskml,
-                                 /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodLcpK0s/595_20210224-0854/pklskml] #list of periods
-      pkl_skimmed_merge_for_ml_all: /data/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_mc_prodLcpK0s_mltot
-      pkl_evtcounter_all: /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_mc_prodLcpK0s_evttot
+      select_children: [["child_1"], ["child_2"], ["child_3"]] # select children explicitly corresponding to each year
+      unmerged_tree_dir: [/mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/TTree/vAN-20210223_ROOT6-1/pp_sim/619_20210423-1225/merged,
+                          /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/TTree/vAN-20210223_ROOT6-1/pp_sim/619_20210423-1225/merged,
+                          /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/TTree/vAN-20210223_ROOT6-1/pp_sim/619_20210423-1225/merged] #list of periods
+      pkl: [/mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodD2H_trkeff/619_20210423-1225/pkl,
+            /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodD2H_trkeff/619_20210423-1225/pkl,
+            /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodD2H_trkeff/619_20210423-1225/pkl] #list of periods
+      pkl_skimmed: [/mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodD2H_trkeff/619_20210423-1225/pklsk,
+                    /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodD2H_trkeff/619_20210423-1225/pklsk,
+                    /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodD2H_trkeff/619_20210423-1225/pklsk] #list of periods
+      pkl_skimmed_merge_for_ml: [/mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodD2H_trkeff/619_20210423-1225/pklskml,
+                                 /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodD2H_trkeff/619_20210423-1225/pklskml,
+                                 /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodD2H_trkeff/619_20210423-1225/pklskml] #list of periods
+      pkl_skimmed_merge_for_ml_all: /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_mc_prodD2H_mltot_trkeff
+      pkl_evtcounter_all: /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_mc_prodD2H_evttot_trkeff
       mcreweights: [../Analyses/ALICE_D2H_vs_mult_pp13/reweighting/prodD2H_16,
                     ../Analyses/ALICE_D2H_vs_mult_pp13/reweighting/prodD2H_17,
                     ../Analyses/ALICE_D2H_vs_mult_pp13/reweighting/prodD2H_18]
@@ -307,7 +309,7 @@ LcpK0spp:
 
     mltype: BinaryClassification
     ncorescrossval: 10
-    mlplot: /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/mlplot # to be removed
+    mlplot: /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/mlplot_tmp # to be removed
     mlout: /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/mlout # to be removed
 
     opt:
@@ -329,19 +331,19 @@ LcpK0spp:
 
   mlapplication:
     data:
-      pkl_skimmed_dec: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_data/593_20210223-2051/pklskdec,
-                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_data/593_20210223-2051/pklskdec,
-                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_data/593_20210223-2051/pklskdec] #list of periods
+      pkl_skimmed_dec: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_data/593_20210223-2051/pklskdec_old_HP_TOF_masked,
+                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_data/593_20210223-2051/pklskdec_old_HP_TOF_masked,
+                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_data/593_20210223-2051/pklskdec_old_HP_TOF_masked] #list of periods
       pkl_skimmed_decmerged: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_data/593_20210223-2051/pklskdecmerged,
                               /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_data/593_20210223-2051/pklskdecmerged,
                               /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_data/593_20210223-2051/pklskdecmerged] #list of periods
     mc:
-      pkl_skimmed_dec: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodLcpK0s/595_20210224-0854/pklskdec,
-                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodLcpK0s/595_20210224-0854/pklskdec,
-                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodLcpK0s/595_20210224-0854/pklskdec] #list of periods
-      pkl_skimmed_decmerged: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodLcpK0s/595_20210224-0854/pklskdecmerged,
-                              /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodLcpK0s/595_20210224-0854/pklskdecmerged,
-                              /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodLcpK0s/595_20210224-0854/pklskdecmerged] #list of periods
+      pkl_skimmed_dec: [/mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodD2H_trkeff/619_20210423-1225/pklskdec,
+                        /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodD2H_trkeff/619_20210423-1225/pklskdec,
+                        /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodD2H_trkeff/619_20210423-1225/pklskdec] #list of periods
+      pkl_skimmed_decmerged: [/mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodD2H_trkeff/619_20210423-1225/pklskdecmerged,
+                              /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodD2H_trkeff/619_20210423-1225/pklskdecmerged,
+                              /mnt/temp/talazare_vAN-20210223/D0kINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodD2H_trkeff/619_20210423-1225/pklskdecmerged] #list of periods
     modelname: xgboost
     modelsperptbin: [xgboost_classifierLcpK0spp_dfselection_pt_cand_1.0_2.0.sav,
                      xgboost_classifierLcpK0spp_dfselection_pt_cand_2.0_4.0.sav,
@@ -363,265 +365,123 @@ LcpK0spp:
     inputfonllpred: data/fonll/DmesonLcPredictions_13TeV_y05_FFptDepLHCb_BRpythia8_PDG2020.root
     dir_general_plots: /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/analysis_plots
 
-    MBvspt_ntrkl:
-      proc_type: Dhadrons_mult
-      useperiod: [1,1,1]
-      plotbin: [1,1,1,1,1,0]
-      usesinglebineff: null
-      fprompt_from_mb: true
-      corresp_mb_typean: null
-      corrEffMult: [false, false, true, true, true, true]
-      sel_binmin2: [0,1,1,10,30,60] #list of var2 splittng nbins
-      sel_binmax2: [9999,9999,9,29,59,99] #list of var2 splitting nbins
-      var_binning2: n_tracklets_corr_sub
-      var_binning2_gen: n_tracklets_corr
-      nbinshisto: 200
-      minvaluehisto: -0.5
-      maxvaluehisto: 199.5
-      triggereff: [1,0.92,0.862,1,1,1]
-      triggereffunc: [0,0.003,0.018,0,0,0]
+    jet_r_shape:
+      proc_type: Dhadrons_jet
+      useperiod: [1,1,1] #list of periods
+      usejetptbinned_deff: false
+      # do_eff_fold: false
+      lc_d0_ratio: false
+      compare_with_inclusive: false 
+      xsec: false 
+      use_inclusive_systematics: false
+      
+      latexnamehadron: "#Lambda_{c}^{#plus}"
+      latexnamedecay: "p K^{0}_{S}"
+
+      var_binning2: pt_jet
+      var_binning2_gen: pt_gen_jet
+      latexbin2var: "#it{p}_{T}^{jet ch}"
+      sel_binmin2_reco: [3., 5., 7., 15] #list of nbins
+      sel_binmax2_reco:     [5., 7., 15., 30] #list of nbins
+      sel_binmin2_gen:  [3., 5., 7., 15] #list of nbins
+      sel_binmax2_gen:      [5., 7., 15., 30] #list of nbins
+
+      var_binningshape: delta_r_jet
+      var_binningshape_gen: delta_r_gen_jet
+      var_shape_latex: "#Delta R^{jet}"
+      sel_binminshape_reco: [0, 0.05, 0.1]
+      sel_binmaxshape_reco:        [0.05, 0.1, 0.2]
+      sel_binminshape_gen:  [0., 0.05, 0.1]
+      sel_binmaxshape_gen:         [0.05, 0.1, 0.2]
+      #sel_binminshape_reco: [0, 0.05, 0.1, 0.2, 0.3, 0.4]
+      #sel_binmaxshape_reco:        [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+      #sel_binminshape_gen:  [0., 0.05, 0.1, 0.2, 0.3, 0.4]
+      #sel_binmaxshape_gen:         [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+      sel_closure_frac: 0.2
       triggerbit: INT7
-      isNbx2: false    #Estimate the feeddown systematic with Nb and Nbx2 method convolution. Set to true just for Lc vs mult.
-      event_cand_validation: False
-      sel_an_binmin: [1,2,4,6,8,12] #list of pt nbins
-      sel_an_binmax: [2,4,6,8,12,24] #list of pt nbins
-      binning_matching: [0,1,2,3,4,5] #list of pt nbins
-      presel_gen_eff: "abs(y_cand) < 0.5 and abs(z_vtx_gen) < 10"
+      sel_an_binmin:    [2, 4] #list of pt nbins
+      sel_an_binmax:      [4, 6] #list of pt nbins
+      binning_matching:   [1, 2] #list of pt nbins
+      jetsel_gen: "abs(y_cand) < 0.5 and abs(z_vtx_gen) < 10 and abs(eta_jet) < 0.5"
+      jetsel_sim: "abs(y_cand) < 0.5 and abs(eta_jet) < 0.5" # jet selection in simulations
+      jetsel_reco: "abs(eta_jet) < 0.5"
       evtsel: is_ev_rej==0
       triggersel:
         data: "trigger_hasbit_INT7==1"
         mc: null
-      data:
+      data: &data_out_default
         runselection: [null, null, null]
-        results: [/data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_data/593_20210223-2051/resultsMBvspt_ntrkl,
-                  /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_data/593_20210223-2051/resultsMBvspt_ntrkl,
-                  /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_data/593_20210223-2051/resultsMBvspt_ntrkl] #list of periods
-        resultsallp: /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/resultsMBvspt_ntrkl
-      mc:
-        runselection: [null, null, null]
-        results: [/data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodLcpK0s/595_20210224-0854/resultsMBvspt_ntrkl,
-                  /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodLcpK0s/595_20210224-0854/resultsMBvspt_ntrkl,
-                  /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodLcpK0s/595_20210224-0854/resultsMBvspt_ntrkl] #list of periods
-        resultsallp: /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_mc_prodLcpK0s/resultsMBvspt_ntrkl
+        results: [/data/Derived_testResults/Jets/Lc/2_6_trkeff/vAN-20210223_ROOT6-1/r_shape/default/default/pp_2016_data/593_20210223-2051/resultsMBjetvspt,
+                  /data/Derived_testResults/Jets/Lc/2_6_trkeff/vAN-20210223_ROOT6-1/r_shape/default/default/pp_2017_data/593_20210223-2051/resultsMBjetvspt,
+                  /data/Derived_testResults/Jets/Lc/2_6_trkeff/vAN-20210223_ROOT6-1/r_shape/default/default/pp_2018_data/593_20210223-2051/resultsMBjetvspt] #list of periods
+        resultsallp: /data/Derived_testResults/Jets/Lc/2_6_trkeff/vAN-20210223_ROOT6-1/r_shape/default/default/pp_data/resultsMBjetvspt
 
-      mass_fit_lim: [2.1, 2.48] # region for the fit of the invariant mass distribution [GeV/c^2]
+      mc: &mc_out_default
+        runselection: [null, null, null]
+        results: [/data/Derived_testResults/Jets/Lc/2_6_trkeff/vAN-20210223_ROOT6-1/r_shape/default/default/pp_2016_mc_prodD2H/594_20210301-1015/resultsMBjetvspt,
+                  /data/Derived_testResults/Jets/Lc/2_6_trkeff/vAN-20210223_ROOT6-1/r_shape/default/default/pp_2017_mc_prodD2H/594_20210301-1015/resultsMBjetvspt,
+                  /data/Derived_testResults/Jets/Lc/2_6_trkeff/vAN-20210223_ROOT6-1/r_shape/default/default/pp_2018_mc_prodD2H/594_20210301-1015/resultsMBjetvspt] #list of periods
+        resultsallp: /data/Derived_testResults/Jets/Lc/2_6_trkeff/vAN-20210223_ROOT6-1/r_shape/default/default/pp_mc_prodD2H/resultsMBjetvspt
+        resultsinclusive: /data/Derived_testResults/Jets/Lc/vAN-20210223_ROOT6-1/r_shape_fullpt/default/default/pp_mc_prodD2H/resultsMBjetvspt
+      data_proc: # alternative processor output used as the analyzer input
+        <<: *data_out_default
+      mc_proc: # alternative processor output used as the analyzer input
+        <<: *mc_out_default
+
+      mass_fit_lim: [2.14, 2.48] # region for the fit of the invariant mass distribution [GeV/c^2]
       bin_width: 0.001 # bin width of the invariant mass histogram
-      # To initialize the individual fits in pT bins
-      # Decide whether to take the sigma from MC or data for individual fits
-      init_fits_from: [mc, mc, mc, mc, mc, mc] # data # data or mc
-      sgnfunc: [kGaus,kGaus,kGaus,kGaus,kGaus,kGaus]
-      bkgfunc: [Pol2,Pol2,Pol2,Pol2,Pol2,Pol2]
+
+      # simple fitter START
+      sgnfunc: [0, 0] # kGaus=0, k2Gaus=1, k2GausSigmaRatioPar=2
+      bkgfunc: [2, 2] # kExpo=0, kLin=1, kPol2=2, kNoBk=3, kPow=4, kPowEx=5
       masspeak: 2.2864
-      massmin: [2.14,2.14,2.14,2.14,2.14,2.14]
-      massmax: [2.436,2.436,2.436,2.436,2.436,2.436]
-      rebin:
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
+      massmin: [2.14, 2.14]
+      massmax: [2.436, 2.436]
+      rebin: [6, 6]
+      fix_mean: [false, false]
+      sigmaarray: [0.0078, 0.0095] # initial sigma
+      masspeaksec: 2.2864
 
-      includesecpeak: [false, false, false, false, false, false]
-      masssecpeak: 2.2864
-      fix_masssecpeak: [false, false, false, false, false, false]
-      widthsecpeak: 0.01
-      fix_widthsecpeak: true
+      # If SetFixGaussianSigma: false & SetInitialGaussianSigma: false, initial sigma value for data fit is taken from MC
+      # If SetFixGaussianSigma: false & SetInitialGaussianSigma: true, sigma value for data fit is fixed to MC sigma
+      # If SetFixGaussianSigma: true & SetInitialGaussianSigma: true, sigma value for data fit is fixed to sigmaarray
 
-      # Fix mean and/or sigma
-      FixedMean: false
-      SetFixGaussianSigma: [true,true,true,true,true,true]
-      # Use value set for "masspeak" for initializing total fit, otherwise what is derived from MC fit is used
-      SetInitialGaussianMean: false
-      # Use values set for "sigmaarray" for initializing total fit (per pT bin),
-      # otherwise what is derived from MC fit is used
-      SetInitialGaussianSigma: [false, false, false, false, false, false]
-      # Max percentage deviation in sigma (from init) to be considered as a good fit
-      MaxPercSigmaDeviation: 0.5
-      # Number of initial signal sigmas around the mean to be excluded for sideband fit
-      exclude_nsigma_sideband: 4
-      # Sigma around mean where signal is integrated after total fit has been done
-      nsigma_signal: 3
-      dolikelihood: true
-      sigmaarray: [0.00745, 0.00775, 0.00976, 0.0101, 0.0118, 0.0154]
-      FixedSigma: false
-      fitcase: Lc
-      latexnamehadron: "#Lambda_{c}^{pK0s}"
-      latexbin2var: "n_{trkl}"
-      nevents: null
-      dodoublecross: false
+      SetFixGaussianSigma: [false, false]
+      SetInitialGaussianSigma: [true, true]
 
-      systematics:
-        # For now don't do these things per pT bin
-        max_chisquare_ndf: 2.
-        rebin: [0]
-        massmin: [2.14, 2.13, 2.12, 2.15, 2.16]
-        massmax: [2.436, 2.426, 2.416, 2.446, 2.456]
-        bincount_sigma: [3, 5]
-        bkg_funcs: [kExpo, kLin, Pol2, Pol3]
-        # Whether to include the free sigma option in the derivation of raw yield uncertainty in given pT bin
-        consider_free_sigma: [False, False, False, False, False, False]
-        rel_var_sigma_down: 0.15
-        rel_var_sigma_up: 0.15
+      fix_sigmasec: [true, true]
+      sigmaarraysec: [0.007947, 0.01]
+      # simple fitter END
 
+      signal_sigma: 2.0
+      sigma_scale: 0.9545
+      sideband_sigma_1_left: 4
+      sideband_sigma_2_left: 9
+      sideband_sigma_1_right: 4
+      sideband_sigma_2_right: 9
+      sidebandleftonly: false
 
-    MBvspt_perc_v0m:
-      proc_type: Dhadrons_mult
-      useperiod: [1,1,1]
-      plotbin: [1,1,1,1,1]
-      usesinglebineff: null
-      fprompt_from_mb: true
-      corresp_mb_typean: null
-      corrEffMult: [false, true, true, true, true]
-      #corrEffMult: [false, false, false, false]
-      sel_binmin2:  [0,0,30,0.1,0] #list of var2 splittng nbins
-      sel_binmax2: [101,100,100,30, 0.1] #101 just to have a different histoname, FIXME
-      triggereff: [1,0.920,0.897,0.998,1]
-      triggereffunc: [0,0,0,0,0]
-      var_binning2: perc_v0m
-      var_binning2_gen: perc_v0m
-      mc_cut_on_binning2: False
-      nbinshisto: 100000
-      minvaluehisto: -0.0005
-      maxvaluehisto: 100.0005
-      triggerbit: INT7
+      niterunfolding: 15
+      niterunfoldingchosen: 4 
 
-      sel_an_binmin: [1,2,4,6,8,12] #list of pt nbins
-      sel_an_binmax: [2,4,6,8,12,24] #list of pt nbins
-      binning_matching: [0,1,2,3,4,5] #list of pt nbins
-      presel_gen_eff: "abs(y_cand) < 0.5 and abs(z_vtx_gen) < 10"
-      evtsel: is_ev_rej==0
-      #INEL>0 requirement. Takes a long time, do this once and copy masshistograms when rerunning is better (disable for cut variation)
-      apply_inel0_sel: [false, true, true, true, true]
-      inel0_var: n_tracklets_corr
+      branching_ratio: 1.09e-2
+      xsection_inel: 57.8
 
-      event_weighting_mc:
-        LHC16pp:
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC16pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC16pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_1_LHC16pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_2_LHC16pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC16pp_weights
-            according_to: n_tracklets
-        LHC17pp:
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC17pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC17pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_1_LHC17pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_2_LHC17pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC17pp_weights
-            according_to: n_tracklets
-        LHC18pp:
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC18pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC18pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_1_LHC18pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_2_LHC18pp_weights
-            according_to: n_tracklets
-          - filepath: data/event_weighting_mc/weights_n_tracklets_MB_Lc_data.root
-            histo_name: n_tracklets_0_LHC18pp_weights
-            according_to: n_tracklets
+      doprior: false
+      doeff_resp: true
 
-      triggersel:
-        data: "trigger_hasbit_INT7==1"
-        mc: null
-      data:
-        runselection: [null, null, null]
-        results: [/data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_data/593_20210223-2051/resultsMBvspt_perc_v0m,
-                  /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_data/593_20210223-2051/resultsMBvspt_perc_v0m,
-                  /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_data/593_20210223-2051/resultsMBvspt_perc_v0m] #list of periods
-        resultsallp: /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/resultsMBvspt_perc_v0m
-      mc:
-        runselection: [null, null, null]
-        results: [/data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_mc_prodLcpK0s/595_20210224-0854/resultsMBvspt_perc_v0m,
-                  /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_mc_prodLcpK0s/595_20210224-0854/resultsMBvspt_perc_v0m,
-                  /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_mc_prodLcpK0s/595_20210224-0854/resultsMBvspt_perc_v0m] #list of periods
-        resultsallp: /data/DerivedResults/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_mc_prodLcpK0s/resultsMBvspt_perc_v0m
+      powheg_path_nonprompt: /data/POWHEG/trees_powheg_fd_central.root
 
-      mass_fit_lim: [2.1, 2.48] # region for the fit of the invariant mass distribution [GeV/c^2]
-      bin_width: 0.001 # bin width of the invariant mass histogram
-      # To initialize the individual fits in pT bins
-      # Decide whether to take the sigma from MC or data for individual fits
-      init_fits_from: [mc, mc, mc, mc, mc, mc] # data # data or mc
-      pre_fits_mc: [kGaus, kGaus, kGaus, kGaus, kGaus, kGaus] # kGaus or k2Gaus, optional, default kGaus for all pT bins
-      sgnfunc: [kGaus,kGaus,kGaus,kGaus,kGaus,kGaus]
-      bkgfunc: [Pol2,Pol2,Pol2,Pol2,Pol2,Pol2]
-      masspeak: 2.2864
-      massmin: [2.14,2.14,2.14,2.14,2.14,2.14]
-      massmax: [2.436,2.436,2.436,2.436,2.436,2.436]
-      #dynamic_rebinning: True
-      rebin:
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
-        - [6,6,8,9,10,12]
+      powheg_path_prompt: /data/POWHEG/trees_powheg_pr_central.root
+      powheg_prompt_variations_path: /data/POWHEG/trees_powheg_pr_
+      powheg_prompt_variations: ["F1_R05","F05_R1","F2_R1","F1_R2","F2_R2","F05_R05","Mhigh","Mlow"]
 
-      includesecpeak: [false, false, false, false, false, false]
-      masssecpeak: 2.2864
-      fix_masssecpeak: [false, false, false, false, false, false]
-      widthsecpeak: 0.01
-      fix_widthsecpeak: true
+      pythia8_prompt_variations_path: /data/PYTHIA8/trees_pythia8_pr_
+      pythia8_prompt_variations: ["default", "colour2soft"]
+      pythia8_prompt_variations_legend: ["PYTHIA 8 (Monash)", "PYTHIA 8 SoftQCD, mode 2"]
 
-      # Fix mean and/or sigma
-      FixedMean: false
-      SetFixGaussianSigma: [true,true,true,true,true,true]
-      # Use value set for "masspeak" for initializing total fit, otherwise what is derived from MC fit is used
-      SetInitialGaussianMean: false
-      # Use values set for "sigmaarray" for initializing total fit (per pT bin),
-      # otherwise what is derived from MC fit is used
-      SetInitialGaussianSigma: [false, false, false, false, false, false]
-      # Max percentage deviation in sigma (from init) to be considered as a good fit
-      MaxPercSigmaDeviation: 0.5
-      # Number of initial signal sigmas around the mean to be excluded for sideband fit
-      exclude_nsigma_sideband: 4
-      # Sigma around mean where signal is integrated after total fit has been done
-      nsigma_signal: 3
-      dolikelihood: true
-      sigmaarray: [0.0078, 0.0078, 0.0082, 0.0091, 0.0117, 0.0156]
-      FixedSigma: true
-      fitcase: Lc
-      latexnamehadron: "#Lambda_{c}^{pK0s}"
-      latexbin2var: "v0m perc"
-      nevents: null
-      dodoublecross: false
-
-      systematics:
-        # For now don't do these things per pT bin
-        max_chisquare_ndf: 2.
-        rebin: [0]
-        massmin: [2.14, 2.13, 2.12, 2.15, 2.16]
-        massmax: [2.436, 2.416, 2.426, 2.446, 2.456]
-        bincount_sigma: [3, 5]
-        bkg_funcs: [kExpo, kLin, Pol2, Pol3]
-        # Whether to include the free sigma option in the derivation of raw yield uncertainty in given pT bin
-        consider_free_sigma: [False, False, False, False, False, False]
-        rel_var_sigma_down: 0.15
-        rel_var_sigma_up: 0.15
-
+      variations_db: ./data/data_prod_20210223/database_variations_LcpK0spp_jet_r_shape.yml
+      inclusive_unc: ./data/data_prod_20210223/mlwp_rms_Binned.root
 
   systematics:
     probvariation:
