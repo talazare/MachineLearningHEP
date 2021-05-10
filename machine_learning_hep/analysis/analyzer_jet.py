@@ -4143,7 +4143,7 @@ class AnalyzerJet(Analyzer):
                 print("catch mode2")
         for i_pythia8 in range(len(self.pythia8_prompt_variations)):
             path = "%s%s.root" % (self.pythia8_prompt_variations_path, self.pythia8_prompt_variations[i_pythia8])
-            if "0soft" in path:
+            if "scaled" in self.pythia8_prompt_variations_legend[i_pythia8]:
                 input_pythia8_i = self.get_soft_mode_0_weighed(path, path_monash, path_mode2, 2, True)
             else:
                 input_pythia8_i = self.get_simulated_yields(path, 2, True)
