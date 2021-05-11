@@ -1339,7 +1339,7 @@ class AnalyzerJet(Analyzer):
                 setup_canvas(csigbkgsubz)
                 legsigbkgsubz = TLegend(.15, .70, .35, .85)
                 setup_legend(legsigbkgsubz)
-                setup_histogram(hzsig, get_colour(1), get_marker(0))
+                setup_histogram(hzsig, get_colour(2), get_marker(0))
                 legsigbkgsubz.AddEntry(hzsig, "signal region", "P")
                 logscale = True
                 y_min_h, y_max_h = get_y_window_his([hzsig, hzbkg_scaled, hzsub_noteffscaled])
@@ -1359,7 +1359,7 @@ class AnalyzerJet(Analyzer):
                 hzsig.SetTitleOffset(1.2, "Y")
                 hzsig.GetYaxis().SetMaxDigits(3)
                 hzsig.Draw()
-                setup_histogram(hzbkg_scaled, get_colour(2), get_marker(1))
+                setup_histogram(hzbkg_scaled, get_colour(1), get_marker(1))
                 legsigbkgsubz.AddEntry(hzbkg_scaled, "sideband region", "P")
                 hzbkg_scaled.Draw("same")
                 setup_histogram(hzsub_noteffscaled, get_colour(3), get_marker(2))
@@ -1881,7 +1881,7 @@ class AnalyzerJet(Analyzer):
             y_min_h = 0
             y_margin_up = 0.05
             y_margin_down = 0
-            bin_pt_max = min(self.p_nptfinbins, heff_pr_list[ibin2].GetXaxis().FindBin(self.lvar2_binmax_gen[ibin2] - 0.01))
+            #bin_pt_max = min(self.p_nptfinbins, heff_pr_list[ibin2].GetXaxis().FindBin(self.lvar2_binmax_gen[ibin2] - 0.01))
             heff_pr_list[ibin2].GetYaxis().SetRangeUser(*get_plot_range(y_min_h, y_max_h, y_margin_down, y_margin_up))
             heff_pr_list[ibin2].GetXaxis().SetRange(1, bin_pt_max)
             heff_pr_list[ibin2].SetTitle("")
@@ -2245,7 +2245,7 @@ class AnalyzerJet(Analyzer):
             leg_feeddown = TLegend(.18, .70, .35, .85)
             setup_legend(leg_feeddown)
             setup_histogram(sideband_input_data_z[ibin2], get_colour(1), get_marker(0))
-            leg_feeddown.AddEntry(sideband_input_data_z[ibin2], "prompt & non-prompt", "P")
+            leg_feeddown.AddEntry(sideband_input_data_z[ibin2], "data (prompt & non-prompt)", "P")
             l_his = [sideband_input_data_z[ibin2], sideband_input_data_subtracted_z[ibin2], folded_z_list[ibin2]]
             y_min_h, y_max_h = get_y_window_his(l_his)
             y_min_0 = min([h.GetMinimum(0) for h in l_his])
@@ -2261,11 +2261,11 @@ class AnalyzerJet(Analyzer):
             sideband_input_data_z[ibin2].SetYTitle("yield")
             sideband_input_data_z[ibin2].Draw()
             setup_histogram(folded_z_list[ibin2], get_colour(2), get_marker(1))
-            leg_feeddown.AddEntry(folded_z_list[ibin2], "non-prompt (POWHEG)", "P")
+            leg_feeddown.AddEntry(folded_z_list[ibin2], "POWHEG (non-prompt)", "P")
             folded_z_list[ibin2].Draw("same")
             setup_histogram(sideband_input_data_subtracted_z[ibin2], get_colour(3), get_marker(2))
             leg_feeddown.AddEntry(sideband_input_data_subtracted_z[ibin2],
-                                  "subtracted (prompt)", "P")
+                                  "data (subtracted)", "P")
             sideband_input_data_subtracted_z[ibin2].Draw("same")
             leg_feeddown.Draw("same")
             latex = TLatex(0.6, 0.8, "%g #leq %s < %g GeV/#it{c}" % \
@@ -2847,7 +2847,8 @@ class AnalyzerJet(Analyzer):
                 unfolded_zvsjetpt_final.SetYTitle("%s (GeV/#it{c})" % self.p_latexbin2var)
                 gStyle.SetPaintTextFormat(".0f")
                 unfolded_zvsjetpt_final.Draw("texte")
-                cunfolded_output.SaveAs("%s/unfolded_output.eps" % self.d_resultsallpdata)
+                unfolded_zvsjetpt_final.Write()
+                cunfolded_output.SaveAs("%s/unfolded_output.png" % self.d_resultsallpdata)
                 gStyle.SetPaintTextFormat("g")
 
             for ibin2 in range(self.p_nbin2_gen):
@@ -3913,24 +3914,27 @@ class AnalyzerJet(Analyzer):
                             else:
                                 # FIXME exception for the untagged bin pylint: disable=fixme
                                 error = input_histograms_sys[ibin2][sys_cat][sys_var].GetBinContent(ibinshape + bin_first) - input_histograms_default[ibin2].GetBinContent(ibinshape + 1)
-                            if error >= 0:
-                                if self.systematic_rms[sys_cat] is True:
+                        else:
+                            # FIXME exception for the untagged bin pylint: disable=fixme
+                            error = input_histograms_sys[ibin2][sys_cat][sys_var].GetBinContent(ibinshape + bin_first) - input_histograms_default[ibin2].GetBinContent(ibinshape + 1)
+                        if error >= 0:
+                            if self.systematic_rms[sys_cat] is True:
+                                error_var_up += error * error
+                                count_sys_up = count_sys_up + 1
+                            else:
+                                if error > error_var_up:
+                                    error_var_up = error
+                        else:
+                            if self.systematic_rms[sys_cat] is True:
+                                if self.systematic_rms_both_sides[sys_cat] is True:
                                     error_var_up += error * error
                                     count_sys_up = count_sys_up + 1
                                 else:
-                                    if error > error_var_up:
-                                        error_var_up = error
+                                    error_var_down += error * error
+                                    count_sys_down = count_sys_down + 1
                             else:
-                                if self.systematic_rms[sys_cat] is True:
-                                    if self.systematic_rms_both_sides[sys_cat] is True:
-                                        error_var_up += error * error
-                                        count_sys_up = count_sys_up + 1
-                                    else:
-                                        error_var_down += error * error
-                                        count_sys_down = count_sys_down + 1
-                                else:
-                                    if abs(error) > error_var_down:
-                                        error_var_down = abs(error)
+                                if abs(error) > error_var_down:
+                                    error_var_down = abs(error)
                     if self.systematic_rms[sys_cat] is True:
                         if count_sys_up != 0:
                             error_var_up = error_var_up/count_sys_up
@@ -4311,7 +4315,7 @@ class AnalyzerJet(Analyzer):
             list_obj = [tgsys[ibin2], tg_powheg[ibin2], input_histograms_default[ibin2], input_powheg_z[ibin2]]
             labels_obj = ["data", "POWHEG #plus PYTHIA 6", "", ""]
             colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
-            markers = [get_marker(i) for i in (0, 1, 0, 1)]
+            markers = [get_marker(i, 2) for i in (0, 1, 0, 1)]
             for i_pythia8 in range(len(self.pythia8_prompt_variations)):
                 list_obj.append(input_pythia8_z[i_pythia8][ibin2])
                 labels_obj.append(self.pythia8_prompt_variations_legend[i_pythia8])
@@ -4340,6 +4344,53 @@ class AnalyzerJet(Analyzer):
             cfinalwsys_wmodels_new.SaveAs("%s/final_wsys_wmodels_%s_new.pdf" % (self.d_resultsallpdata, suffix))
 
             if self.lc_d0_ratio:
+                canvas_final = TCanvas("canvas_final" + suffix, "The Sideband Left-Right Canvas" + suffix)
+                setup_canvas(canvas_final)
+                canvas_final.Divide(1, 2, 0, 0)
+                pad_final_1 = canvas_final.cd(1)
+                pad_final_2 = canvas_final.cd(2)
+                pad_final_1.SetPad(0, 0.4, 0.95, 0.95)
+                pad_final_1.SetTopMargin(0.08)
+                pad_final_1.SetRightMargin(0.05)
+                pad_final_2.SetPad(0, 0, 0.95, 0.4)
+                pad_final_2.SetBottomMargin(0.2)
+                pad_final_2.SetRightMargin(0.05)
+                pad_final_1.SetFillColor(0)
+                pad_final_1.SetTicks(1, 1)
+                pad_final_2.SetFillColor(0)
+                pad_final_2.SetTicks(1, 1)
+                canvas_final.cd(1)
+                list_obj = [tgsys[ibin2], tg_powheg[ibin2], input_histograms_default[ibin2], input_powheg_z[ibin2]]
+                labels_obj = ["data", "POWHEG #plus PYTHIA 6", "", ""]
+                colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
+                markers = [get_marker(i) for i in (0, 1, 0, 1)]
+                for i_pythia8 in range(len(self.pythia8_prompt_variations)):
+                    list_obj.append(input_pythia8_z[i_pythia8][ibin2])
+                    labels_obj.append(self.pythia8_prompt_variations_legend[i_pythia8])
+                    colours.append(get_colour(i_pythia8 + 2))
+                    markers.append(get_marker(i_pythia8 + 2))
+                cfinalwsys_wmodels_new, _ = make_plot("cfinalwsys_wmodels_new_" + suffix, \
+                    list_obj=list_obj, labels_obj=labels_obj, opt_leg_g="FP", opt_plot_g="2", \
+                    colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[0.05, 0.4], \
+                    title=";%s;1/#it{N}_{jets} d#it{N}/d%s" % (self.v_varshape_latex, self.v_varshape_latex))
+                for gr, c in zip((tgsys[ibin2], tg_powheg[ibin2]), (0, 1)):
+                    gr.SetMarkerColor(get_colour(c))
+                if self.typean == "jet_rg":
+                    cfinalwsys_wmodels_new.SetTickx(0)
+                    axis_thetag.Draw("same")
+                # Draw LaTeX
+                y_latex = 0.83
+                list_text = [self.text_alice, self.text_jets, text_ptjet_full, text_pth_full]
+                if self.shape in ("zg", "rg", "nsd"):
+                    list_text.append(self.text_sd)
+                list_latex = []
+                for text_latex in list_text:
+                    latex = TLatex(self.x_latex, y_latex, text_latex)
+                    list_latex.append(latex)
+                    draw_latex(latex, textsize=0.03)
+                    y_latex -= self.y_step
+
+                canvas_final.cd(2)
                 list_obj = [rel_sys[ibin2], powheg_ratio_sys[ibin2], histo_ratios[ibin2], powheg_ratio[ibin2]]
                 labels_obj = ["data", "POWHEG #plus PYTHIA 6", "", ""]
                 colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
@@ -4350,7 +4401,7 @@ class AnalyzerJet(Analyzer):
                     labels_obj.append(self.pythia8_prompt_variations_legend[i_pythia8])
                     colours.append(get_colour(i_pythia8 + 2))
                     markers.append(get_marker(i_pythia8 + 2))
-                cfinalratio_wmodels_new, _ = make_plot("cfinalratio_wmodels_new_" + suffix, \
+                cfinalwsys_wmodels_new, _ = make_plot("cfinalratio_wmodels_new_" + suffix, \
                     list_obj=list_obj, labels_obj=labels_obj, opt_leg_g="FP", opt_plot_g="2", \
                     colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[0.05, 0.4], \
                     title="yield_{#Lambda_{c}^{+}}/yield_{D^{0}}")
@@ -4370,7 +4421,9 @@ class AnalyzerJet(Analyzer):
                     list_latex.append(latex)
                     draw_latex(latex, textsize=0.03)
                     y_latex -= self.y_step
-                cfinalratio_wmodels_new.SaveAs("%s/final_wsys_ratio_wmodels_%s_new.pdf" % (self.d_resultsallpdata, suffix))
+                #cfinalratio_wmodels_new.Draw()
+                #cfinalratio_wmodels_new.SaveAs("%s/final_wsys_ratio_wmodels_%s_new.pdf" % (self.d_resultsallpdata, suffix))
+                canvas_final.SaveAs("%s/final_%s_new.pdf" % (self.d_resultsallpdata, suffix))
 
             # plot the relative systematic uncertainties for all categories together
 
@@ -4748,8 +4801,9 @@ class AnalyzerJet(Analyzer):
         # prompt vs. non-prompt selection
         pdg_parton_good = 4 if prompt else 5
         df_sim = df_sim[df_sim["pdg_parton"] == pdg_parton_good]
-        pt_hist = TH1F("pt_hist", "", 100, 0, 100)
+        pt_hist = TH1F("pt_hist", "", 200, 0, 100)
         fill_hist(pt_hist, df_sim.pt_cand)
+        pt_hist.Scale(1/pt_hist.Integral())
         return pt_hist
 
     def get_soft_mode_0_weighed(self, file_path: str, file_path_1: str, file_path_2: str, dim: int, prompt: bool):
@@ -4807,9 +4861,41 @@ class AnalyzerJet(Analyzer):
             self.logger.fatal("Error: %d is not a supported dimension.", dim)
 
         monash_pt_spect = self.prepare_pt_spectra_sim(file_path_1, prompt)
+        print("MONASH integral", monash_pt_spect.Integral())
         mode_2_pt_spect = self.prepare_pt_spectra_sim(file_path_2, prompt)
+        print("MODE 2 integral", mode_2_pt_spect.Integral())
+        mm_canv = TCanvas("monash+mode2")
+        setup_canvas(mm_canv)
+        leg_mm = TLegend(.67, .6, .85, .85)
+        setup_legend(leg_mm)
+        m_up = 0.05
+        m_down = 0.05
+        y_min, y_max = get_y_window_his([monash_pt_spect, mode_2_pt_spect])
+        #y_min = 1.e-4
+        setup_histogram(monash_pt_spect, get_colour(1), get_marker(1))
+        setup_histogram(mode_2_pt_spect, get_colour(2), get_marker(2))
+        leg_mm.AddEntry(monash_pt_spect, "MONASH")
+        leg_mm.AddEntry(mode_2_pt_spect, "SOFT QCD mode 2")
+        monash_pt_spect.GetYaxis().SetRangeUser(*get_plot_range(y_min, y_max, m_up, m_down))
+        #c_mm.SetLogy()
+        monash_pt_spect.SetYTitle("")
+        monash_pt_spect.SetXTitle("p_{T}")
+        monash_pt_spect.Draw()
+        mode_2_pt_spect.Draw("same")
+        leg_mm.Draw("same")
+        mm_canv.SaveAs("%s/pt_spectra_mm.png" % self.d_resultsallpdata)
         ratio_scale = monash_pt_spect.Clone("ratio_scale")
         ratio_scale.Divide(mode_2_pt_spect)
+
+        mm_ratio_canv = TCanvas("monash+mode2_ratio")
+        setup_canvas(mm_ratio_canv)
+        setup_histogram(ratio_scale, get_colour(1), get_marker(1))
+        y_min, y_max = get_y_window_his(ratio_scale)
+        #ratio_scale.GetYaxis().SetRangeUser(*get_plot_range(y_min, y_max, m_up, m_down))
+        ratio_scale.GetYaxis().SetRangeUser(0,2)
+        ratio_scale.GetXaxis().SetRangeUser(0, 24)
+        ratio_scale.Draw()
+        mm_ratio_canv.SaveAs("%s/pt_spectra_mm_ratio.png" % self.d_resultsallpdata)
         pt_df = []
         for ipt in range(ratio_scale.GetNbinsX()):
             df_tmp = seldf_singlevar(df_sim, self.v_var_binning, ratio_scale.GetXaxis().GetBinLowEdge(ipt+1), \
