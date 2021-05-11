@@ -281,10 +281,12 @@ D0pp:
       proc_type: Dhadrons_jet
       useperiod: [1,1,1] #list of periods
       usejetptbinned_deff: false
-      lc_d0_ratio: false
+      lc_d0_ratio: true
       compare_with_inclusive: false 
       latexnamehadron: "D^{0}"
       latexnamedecay: "K^{#minus} #pi^{#plus}"
+      use_inclusive_systematics: false
+
 
       var_binning2: pt_jet
       var_binning2_gen: pt_gen_jet
@@ -381,6 +383,8 @@ D0pp:
       pythia8_prompt_variations_path: /data/PYTHIA8/trees_pythia8_pr_
       pythia8_prompt_variations: ["default","colour2soft","colour2soft"]
       pythia8_prompt_variations_legend:  ["PYTHIA 8 (Monash)","PYTHIA 8 SoftQCD, mode 2", "SoftQCD, mode 2 (scaled)"]
+      #pythia8_prompt_variations: ["default","colour2soft"]
+      #pythia8_prompt_variations_legend:  ["PYTHIA 8 (Monash)","PYTHIA 8 SoftQCD, mode 2"]
 
       variations_db: ./data/data_prod_20200824/database_variations_D0pp_jet_zg.yml
 
@@ -481,7 +485,7 @@ D0pp:
       <<: *jet_default
       var_binningshape: delta_r_jet
       var_binningshape_gen: delta_r_gen_jet
-      var_shape_latex: "#Delta R^{jet}"
+      var_shape_latex: "#it{r}"
       #sel_binminshape_reco: [0, 0.05, 0.1, 0.2, 0.3, 0.4]
       #sel_binmaxshape_reco:        [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
       #sel_binminshape_gen:  [0, 0.05, 0.1, 0.2, 0.3, 0.4]

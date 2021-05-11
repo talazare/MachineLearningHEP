@@ -71,7 +71,7 @@ class AnalyzerJet(Analyzer):
         self.p_latexnhadron = datap["analysis"][self.typean]["latexnamehadron"]
         self.p_latexndecay = datap["analysis"][self.typean]["latexnamedecay"]
         self.p_latexbin2var = datap["analysis"][self.typean]["latexbin2var"]
-        self.v_pth_latex = "#it{p}_{T}^{%s}" % self.p_latexnhadron
+        self.v_pth_latex = "#it{p}_{T, %s}" % self.p_latexnhadron
         self.v_varshape_latex = datap["analysis"][self.typean]["var_shape_latex"]
 
         # first variable (hadron pt)
@@ -233,7 +233,7 @@ class AnalyzerJet(Analyzer):
             self.systematic_symmetrise[c] = db_sys[catname]["symmetrise"]
             self.systematic_rms_both_sides[c] = db_sys[catname]["rms_both_sides"]
         self.inclusive_unc = datap["analysis"][self.typean].get("inclusive_unc", None)
-        self.use_inclusive_systematics= datap["analysis"][self.typean].get("use_inclusive_systematics", True)
+        self.use_inclusive_systematics= datap["analysis"][self.typean].get("use_inclusive_systematics", False)
 
         # output directories
         self.d_resultsallpmc = datap["analysis"][typean]["mc"]["results"][period] \
@@ -299,7 +299,7 @@ class AnalyzerJet(Analyzer):
         self.text_alice = "#bf{ALICE} Preliminary, pp, #sqrt{#it{s}} = 13 TeV"
         self.text_jets = "%s-tagged charged jets, anti-#it{k}_{T}, #it{R} = 0.4" % self.p_latexnhadron
         self.text_ptjet = "%g #leq %s < %g GeV/#it{c}, #left|#it{#eta}_{jet}#right| #leq 0.5"
-        self.text_pth = "%g #leq #it{p}_{T}^{%s} < %g GeV/#it{c}, #left|#it{y}_{%s}#right| #leq 0.8"
+        self.text_pth = "%g #leq #it{p}_{T, %s} < %g GeV/#it{c}, #left|#it{y}_{%s}#right| #leq 0.8"
         self.text_sd = "Soft Drop (#it{z}_{cut} = 0.1, #it{#beta} = 0)"
         self.text_acc_h = "#left|#it{y}_{%s}#right| #leq 0.8" % self.p_latexnhadron
         self.text_powheg = "POWHEG + PYTHIA 6 + EvtGen"
@@ -662,10 +662,10 @@ class AnalyzerJet(Analyzer):
             #    eff_fd_inc = effhisto_inc_fd.GetBinContent(effhisto_inc_fd.FindBin(self.lpt_finbinmin[ipt]))
             #    eff_fd = eff_fd_inc/effhist_part_fd.GetBinContent(effhist_part_fd.FindBin(self.lpt_finbinmin[ipt]))
             #    inc_eff_fd.SetBinContent(ipt+1, eff_fd)
-	    inc_eff_pr = effhisto_inc_pr.Clone("inc_eff_pr")
-	    inc_eff_pr.Divide(effhist_part_pr)
-	    inc_eff_fd = effhisto_inc_fd.Clone("inc_eff_fd")
-	    inc_eff_fd.Divide(effhist_part_fd)
+            inc_eff_pr = effhisto_inc_pr.Clone("inc_eff_pr")
+            inc_eff_pr.Divide(effhist_part_pr)
+            inc_eff_fd = effhisto_inc_fd.Clone("inc_eff_fd")
+            inc_eff_fd.Divide(effhist_part_fd)
             cEff_ratio = TCanvas("cEff_ratio", "The Fit Canvas")
             setup_canvas(cEff_ratio)
             legeff_ratio = TLegend(.13, .65, .5, .88)
@@ -1987,7 +1987,7 @@ class AnalyzerJet(Analyzer):
             leg_pt_diff.AddEntry(ptjet_list_npr[ibin2] , "non-prompt", "P")
             ptjet_list_npr[ibin2].Draw("same")
             leg_pt_diff.Draw("same")
-            cptjet_diff.SaveAs("%s/pr_npr_difference_%s_%.2f_%.2f.png" % \
+            cptjet_diff.SaveAs("%s/pr_npr_difference_%s_%.2f_%.2f.eps" % \
                       (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
                        self.lvar2_binmax_gen[ibin2]))
             c_ratio_ptjet_diff = TCanvas("c_ratio_ptjet_diff %d" % ipt, "prompt&nonprompt ratio_ptjet")
@@ -2005,7 +2005,7 @@ class AnalyzerJet(Analyzer):
             y_margin_down = 0.05
             ratio_ptjet_hist.GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
             ratio_ptjet_hist.Draw()
-            c_ratio_ptjet_diff.SaveAs("%s/pr_npr_ratio_ptjet_%s_%.2f_%.2f.png" % \
+            c_ratio_ptjet_diff.SaveAs("%s/pr_npr_ratio_ptjet_%s_%.2f_%.2f.eps" % \
                     (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2]))
             for ipt in range(self.p_nptfinbins):
                 c_ipt_diff = TCanvas("c_ipt_diff %d" % ipt, "prompt&nonprompt differences")
@@ -2032,7 +2032,7 @@ class AnalyzerJet(Analyzer):
                 leg_ipt_diff.AddEntry(ipt_list_npr[ibin2][ipt] , "non-prompt", "P")
                 ipt_list_npr[ibin2][ipt].Draw("same")
                 leg_ipt_diff.Draw("same")
-                c_ipt_diff.SaveAs("%s/pr_npr_difference_%s_%.2f_%.2f_pt_cand_%.2f_%.2f.png" % \
+                c_ipt_diff.SaveAs("%s/pr_npr_difference_%s_%.2f_%.2f_pt_cand_%.2f_%.2f.eps" % \
                           (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
                            self.lvar2_binmax_gen[ibin2],
                            self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt]))
@@ -2053,7 +2053,7 @@ class AnalyzerJet(Analyzer):
                 y_margin_down = 0.05
                 ratio_hist.GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
                 ratio_hist.Draw()
-                c_ratio_diff.SaveAs("%s/pr_npr_ratio_%s_%.2f_%.2f_pt_cand_%.2f_%.2f.png" % \
+                c_ratio_diff.SaveAs("%s/pr_npr_ratio_%s_%.2f_%.2f_pt_cand_%.2f_%.2f.eps" % \
                           (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
                            self.lvar2_binmax_gen[ibin2],
                            self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt]))
@@ -2082,7 +2082,7 @@ class AnalyzerJet(Analyzer):
                 hz_diff_list[ibinshape].GetYaxis().SetRangeUser(*get_plot_range(y_min_0, y_max_h, y_margin_down, y_margin_up, True))
             hz_diff_list[ibinshape].Draw("same")
         leg_z_diff.Draw("same")
-        cz_diff.SaveAs("%s/response_pr_npr_diff_%s.png" % (self.d_resultsallpdata, self.v_varshape_latex))
+        cz_diff.SaveAs("%s/response_pr_npr_diff_%s.eps" % (self.d_resultsallpdata, self.v_varshape_latex))
 
         cz_fracdiff = TCanvas("cz_fracdiff ", "non-prompt z response fractional differences")
         setup_canvas(cz_fracdiff)
@@ -2848,7 +2848,7 @@ class AnalyzerJet(Analyzer):
                 gStyle.SetPaintTextFormat(".0f")
                 unfolded_zvsjetpt_final.Draw("texte")
                 unfolded_zvsjetpt_final.Write()
-                cunfolded_output.SaveAs("%s/unfolded_output.png" % self.d_resultsallpdata)
+                cunfolded_output.SaveAs("%s/unfolded_output.eps" % self.d_resultsallpdata)
                 gStyle.SetPaintTextFormat("g")
 
             for ibin2 in range(self.p_nbin2_gen):
@@ -3614,8 +3614,8 @@ class AnalyzerJet(Analyzer):
                             self.logger.fatal(make_message_notfound(name_signif,path_signif))
                         significance = histo_signif.GetBinContent(1)
                         #if self.do_check_signif:
-			 	#if significance < 3:
-                        	#    signif_check = False
+                        if significance < 3:
+                            signif_check = False
                     # FIXME exception for different jet pt binning pylint: disable=fixme
                     name_his_orig = name_his
                     if ibin2 == 0 and string_catvar == "binning/pt_jet_0":
@@ -3752,7 +3752,7 @@ class AnalyzerJet(Analyzer):
                 line.SetLineColor(1)
                 line.Draw("same")
                 leg_sysvar_ratio.Draw("same")
-                csysvar_ratio.SaveAs("%s/sys_var_ratio_%s_%s.png" % (self.d_resultsallpdata, suffix2, suffix))
+                csysvar_ratio.SaveAs("%s/sys_var_ratio_%s_%s.eps" % (self.d_resultsallpdata, suffix2, suffix))
 
                 csysvar_eff = TCanvas("csysvar_%s_%s" % (suffix2, suffix), "systematic variations" + suffix2 + suffix)
                 setup_canvas(csysvar_eff)
@@ -3783,7 +3783,7 @@ class AnalyzerJet(Analyzer):
                 latex = TLatex(0.15, 0.82, "%g #leq %s < %g GeV/#it{c}" % (self.lvar2_binmin_gen[ibin2], self.p_latexbin2var, self.lvar2_binmax_gen[ibin2]))
                 draw_latex(latex)
                 leg_sysvar_eff.Draw("same")
-                csysvar_eff.SaveAs("%s/sys_var_eff_%s_%s.png" % (self.d_resultsallpdata, suffix2, suffix))
+                csysvar_eff.SaveAs("%s/sys_var_eff_%s_%s.eps" % (self.d_resultsallpdata, suffix2, suffix))
 
                 csysvar_bin = TCanvas("csysvar_bin_%s_%s" % (suffix2, suffix), "systematic variations" + suffix2 + suffix)
                 setup_canvas(csysvar_bin)
@@ -3848,7 +3848,7 @@ class AnalyzerJet(Analyzer):
                 latex = TLatex(0.15, 0.82, "%g #leq %s < %g GeV/#it{c}" % (self.lvar2_binmin_gen[ibin2], self.p_latexbin2var, self.lvar2_binmax_gen[ibin2]))
                 draw_latex(latex)
                 leg_sysvar_eff_ratio.Draw("same")
-                csysvar_eff_ratio.SaveAs("%s/sys_var_eff_ratio_%s_%s.png" % (self.d_resultsallpdata, suffix2, suffix))
+                csysvar_eff_ratio.SaveAs("%s/sys_var_eff_ratio_%s_%s.eps" % (self.d_resultsallpdata, suffix2, suffix))
 
                 y_min, y_max = get_y_window_his(var_histos)
                 for r_val in range(len(self.lvarshape_binmin_gen)):
@@ -3871,7 +3871,7 @@ class AnalyzerJet(Analyzer):
                 latex = TLatex(0.15, 0.82, "%g #leq %s < %g GeV/#it{c}" % (self.lvar2_binmin_gen[ibin2], self.p_latexbin2var, self.lvar2_binmax_gen[ibin2]))
                 draw_latex(latex)
                 leg_varhisto.Draw("same")
-                csysvar_bin.SaveAs("%s/sys_var_bin_%s_%s.png" % (self.d_resultsallpdata, suffix2, suffix))
+                csysvar_bin.SaveAs("%s/sys_var_bin_%s_%s.eps" % (self.d_resultsallpdata, suffix2, suffix))
         # calculate the systematic uncertainties
 
         sys_up = [] # list of absolute upward uncertainties for all categories, shape bins, pt_jet bins
@@ -4177,10 +4177,14 @@ class AnalyzerJet(Analyzer):
                 input_pythia8_z_jetpt.append(input_pythia8[i_pythia8].ProjectionX("input_pythia8" + self.pythia8_prompt_variations[i_pythia8]+suffix, ibin2 + 1, ibin2 + 1, "e"))
                 input_pythia8_z_jetpt[ibin2].Scale(1.0 / input_pythia8_z_jetpt[ibin2].Integral(), "width")
                 pythia8_out = input_pythia8_z_jetpt[ibin2]
+                if "scaled" in self.pythia8_prompt_variations_legend[i_pythia8]:
+                     name = pythia8_out.GetName()+"scaled"
+                     pythia8_out.SetName(name)
                 file_sim_out.cd()
                 pythia8_out.Write()
                 if self.lc_d0_ratio:
                     name_pythia = input_pythia8_z_jetpt[ibin2].GetName()
+                    print("~~~~~~~~~~~~~~~~", name_pythia, "~~~~~~~~~~~~~~~~~~~~")
                     pythia_lc = file_sim_lc.Get(name_pythia)
                     pythia_ratio=pythia_lc.Clone("pythia_ratio")
                     pythia_ratio.Divide(input_pythia8_z_jetpt[ibin2])
@@ -4235,7 +4239,7 @@ class AnalyzerJet(Analyzer):
 
             # plot the results with systematic uncertainties and models
 
-            leg_pos = [.55, .65, .8, .85]
+            leg_pos = [.6, .65, .8, .85]
 
             cfinalwsys_wmodels = TCanvas("cfinalwsys_wmodels " + suffix, "final result with systematic uncertainties with models" + suffix)
             setup_canvas(cfinalwsys_wmodels)
@@ -4283,7 +4287,7 @@ class AnalyzerJet(Analyzer):
             draw_latex(latex1)
             latex2 = TLatex(0.15, 0.72, "%g #leq %s < %g GeV/#it{c}, #left|#it{#eta}_{jet}#right| #leq 0.5" % (self.lvar2_binmin_reco[ibin2], self.p_latexbin2var, self.lvar2_binmax_reco[ibin2]))
             draw_latex(latex2)
-            latex3 = TLatex(0.15, 0.67, "%g #leq #it{p}_{T}^{%s} < %g GeV/#it{c}, #left|#it{y}_{%s}#right| #leq 0.8" % (self.lpt_finbinmin[0], self.p_latexnhadron, min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]), self.p_latexnhadron))
+            latex3 = TLatex(0.15, 0.67, "%g #leq #it{p}_{T, %s} < %g GeV/#it{c}, #left|#it{y}_{%s}#right| #leq 0.8" % (self.lpt_finbinmin[0], self.p_latexnhadron, min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]), self.p_latexnhadron))
             draw_latex(latex3)
             latex_SD = TLatex(0.15, 0.62, "Soft Drop (#it{z}_{cut} = 0.1, #it{#beta} = 0)")
             draw_latex(latex_SD)
@@ -4315,7 +4319,11 @@ class AnalyzerJet(Analyzer):
             list_obj = [tgsys[ibin2], tg_powheg[ibin2], input_histograms_default[ibin2], input_powheg_z[ibin2]]
             labels_obj = ["data", "POWHEG #plus PYTHIA 6", "", ""]
             colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
-            markers = [get_marker(i, 2) for i in (0, 1, 0, 1)]
+            markers = [get_marker(i, j) for i, j in zip((0, 1, 0, 1), (2, 0, 2, 0))]
+            #list_obj = [tgsys[ibin2], input_histograms_default[ibin2]]
+            #labels_obj = ["data", ""]
+            #colours = [get_colour(i, j) for i, j in zip((0, 0), (2, 1))]
+            #markers = [get_marker(i, 2) for i in (0, 0)]
             for i_pythia8 in range(len(self.pythia8_prompt_variations)):
                 list_obj.append(input_pythia8_z[i_pythia8][ibin2])
                 labels_obj.append(self.pythia8_prompt_variations_legend[i_pythia8])
@@ -4344,74 +4352,30 @@ class AnalyzerJet(Analyzer):
             cfinalwsys_wmodels_new.SaveAs("%s/final_wsys_wmodels_%s_new.pdf" % (self.d_resultsallpdata, suffix))
 
             if self.lc_d0_ratio:
-                canvas_final = TCanvas("canvas_final" + suffix, "The Sideband Left-Right Canvas" + suffix)
-                setup_canvas(canvas_final)
-                canvas_final.Divide(1, 2, 0, 0)
-                pad_final_1 = canvas_final.cd(1)
-                pad_final_2 = canvas_final.cd(2)
-                pad_final_1.SetPad(0, 0.4, 0.95, 0.95)
-                pad_final_1.SetTopMargin(0.08)
-                pad_final_1.SetRightMargin(0.05)
-                pad_final_2.SetPad(0, 0, 0.95, 0.4)
-                pad_final_2.SetBottomMargin(0.2)
-                pad_final_2.SetRightMargin(0.05)
-                pad_final_1.SetFillColor(0)
-                pad_final_1.SetTicks(1, 1)
-                pad_final_2.SetFillColor(0)
-                pad_final_2.SetTicks(1, 1)
-                canvas_final.cd(1)
-                list_obj = [tgsys[ibin2], tg_powheg[ibin2], input_histograms_default[ibin2], input_powheg_z[ibin2]]
-                labels_obj = ["data", "POWHEG #plus PYTHIA 6", "", ""]
-                colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
-                markers = [get_marker(i) for i in (0, 1, 0, 1)]
-                for i_pythia8 in range(len(self.pythia8_prompt_variations)):
-                    list_obj.append(input_pythia8_z[i_pythia8][ibin2])
-                    labels_obj.append(self.pythia8_prompt_variations_legend[i_pythia8])
-                    colours.append(get_colour(i_pythia8 + 2))
-                    markers.append(get_marker(i_pythia8 + 2))
-                cfinalwsys_wmodels_new, _ = make_plot("cfinalwsys_wmodels_new_" + suffix, \
-                    list_obj=list_obj, labels_obj=labels_obj, opt_leg_g="FP", opt_plot_g="2", \
-                    colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[0.05, 0.4], \
-                    title=";%s;1/#it{N}_{jets} d#it{N}/d%s" % (self.v_varshape_latex, self.v_varshape_latex))
-                for gr, c in zip((tgsys[ibin2], tg_powheg[ibin2]), (0, 1)):
-                    gr.SetMarkerColor(get_colour(c))
-                if self.typean == "jet_rg":
-                    cfinalwsys_wmodels_new.SetTickx(0)
-                    axis_thetag.Draw("same")
-                # Draw LaTeX
-                y_latex = 0.83
-                list_text = [self.text_alice, self.text_jets, text_ptjet_full, text_pth_full]
-                if self.shape in ("zg", "rg", "nsd"):
-                    list_text.append(self.text_sd)
-                list_latex = []
-                for text_latex in list_text:
-                    latex = TLatex(self.x_latex, y_latex, text_latex)
-                    list_latex.append(latex)
-                    draw_latex(latex, textsize=0.03)
-                    y_latex -= self.y_step
-
-                canvas_final.cd(2)
                 list_obj = [rel_sys[ibin2], powheg_ratio_sys[ibin2], histo_ratios[ibin2], powheg_ratio[ibin2]]
                 labels_obj = ["data", "POWHEG #plus PYTHIA 6", "", ""]
                 colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
                 markers = [get_marker(i) for i in (0, 1, 0, 1)]
+                #list_obj = [rel_sys[ibin2], histo_ratios[ibin2]]
+                #labels_obj = ["data",  ""]
+                #colours = [get_colour(i, j) for i, j in zip((0, 0), (2, 1))]
+                #markers = [get_marker(i, 2) for i in (0, 0)]
                 for i_pythia8 in range(len(self.pythia8_prompt_variations)):
-                    print(i_pythia8, input_pythia8_ratio[i_pythia8][ibin2], "PYTHIA")
                     list_obj.append(input_pythia8_ratio[i_pythia8][ibin2])
                     labels_obj.append(self.pythia8_prompt_variations_legend[i_pythia8])
                     colours.append(get_colour(i_pythia8 + 2))
                     markers.append(get_marker(i_pythia8 + 2))
-                cfinalwsys_wmodels_new, _ = make_plot("cfinalratio_wmodels_new_" + suffix, \
+                cfinalratio_wmodels_new, _ = make_plot("cfinalratio_wmodels_new_" + suffix, \
                     list_obj=list_obj, labels_obj=labels_obj, opt_leg_g="FP", opt_plot_g="2", \
                     colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[0.05, 0.4], \
-                    title="yield_{#Lambda_{c}^{+}}/yield_{D^{0}}")
-                for gr, c in zip((tgsys[ibin2], tg_powheg[ibin2]), (0, 1)):
+                    title=";%s; yield_{#Lambda_{c}^{+}}/yield_{D^{0}}" %self.v_varshape_latex, )
+                for gr, c in zip((rel_sys[ibin2], powheg_ratio_sys[ibin2]), (0, 1)):
                     gr.SetMarkerColor(get_colour(c))
                 if self.typean == "jet_rg":
                     cfinalratio_wmodels_new.SetTickx(0)
                     axis_thetag.Draw("same")
                 # Draw LaTeX
-                y_latex = 0.83
+                y_latex = 0.84
                 list_text = [self.text_alice, self.text_jets, text_ptjet_full, text_pth_full]
                 if self.shape in ("zg", "rg", "nsd"):
                     list_text.append(self.text_sd)
@@ -4421,9 +4385,7 @@ class AnalyzerJet(Analyzer):
                     list_latex.append(latex)
                     draw_latex(latex, textsize=0.03)
                     y_latex -= self.y_step
-                #cfinalratio_wmodels_new.Draw()
-                #cfinalratio_wmodels_new.SaveAs("%s/final_wsys_ratio_wmodels_%s_new.pdf" % (self.d_resultsallpdata, suffix))
-                canvas_final.SaveAs("%s/final_%s_new.pdf" % (self.d_resultsallpdata, suffix))
+                cfinalratio_wmodels_new.SaveAs("%s/final_wsys_ratio_wmodels_%s_new.pdf" % (self.d_resultsallpdata, suffix))
 
             # plot the relative systematic uncertainties for all categories together
 
@@ -4686,14 +4648,14 @@ class AnalyzerJet(Analyzer):
             fonll_hist.Draw()
             powheg_hist.Draw("same")
             leg_fonll.Draw("same")
-            c_fonll.SaveAs("%s/crossection_fonll.png" % self.d_resultsallpdata)
+            c_fonll.SaveAs("%s/crossection_fonll.eps" % self.d_resultsallpdata)
             ratio_fonll=powheg_hist.Clone("ratio_fonll")
             ratio_fonll.Divide(fonll_hist)
             setup_histogram(ratio_fonll)
             ratio_fonll.SetXTitle("p_{T}")
             ratio_fonll.SetYTitle("#sigma_{powheg}/#sigma_{fonll}")
             ratio_fonll.Draw()
-            ratio_fonll.SaveAs("%s/scaling.png" % self.d_resultsallpdata)
+            ratio_fonll.SaveAs("%s/scaling.eps" % self.d_resultsallpdata)
             pt_df = []
             for ipt in range(ratio_fonll.GetNbinsX()):
                 df_tmp = seldf_singlevar(df_sim, self.v_var_binning, ratio_fonll.GetXaxis().GetBinLowEdge(ipt+1), \
@@ -4883,7 +4845,7 @@ class AnalyzerJet(Analyzer):
         monash_pt_spect.Draw()
         mode_2_pt_spect.Draw("same")
         leg_mm.Draw("same")
-        mm_canv.SaveAs("%s/pt_spectra_mm.png" % self.d_resultsallpdata)
+        mm_canv.SaveAs("%s/pt_spectra_mm.eps" % self.d_resultsallpdata)
         ratio_scale = monash_pt_spect.Clone("ratio_scale")
         ratio_scale.Divide(mode_2_pt_spect)
 
@@ -4895,7 +4857,7 @@ class AnalyzerJet(Analyzer):
         ratio_scale.GetYaxis().SetRangeUser(0,2)
         ratio_scale.GetXaxis().SetRangeUser(0, 24)
         ratio_scale.Draw()
-        mm_ratio_canv.SaveAs("%s/pt_spectra_mm_ratio.png" % self.d_resultsallpdata)
+        mm_ratio_canv.SaveAs("%s/pt_spectra_mm_ratio.eps" % self.d_resultsallpdata)
         pt_df = []
         for ipt in range(ratio_scale.GetNbinsX()):
             df_tmp = seldf_singlevar(df_sim, self.v_var_binning, ratio_scale.GetXaxis().GetBinLowEdge(ipt+1), \

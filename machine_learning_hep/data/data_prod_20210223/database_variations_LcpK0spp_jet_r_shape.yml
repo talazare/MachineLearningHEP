@@ -13,7 +13,7 @@ categories:
                 label: ["default"]
                 diffs: {}
     fitting:
-        activate: no
+        activate: yes
         processor: false
         label: "fitting"
         correlation: "corr"
@@ -81,7 +81,7 @@ categories:
                                 SetInitialGaussianSigma: [false]
                                 SetFixGaussianSigma: [false]
     sideband:
-        activate: no 
+        activate: yes 
         processor: false
         label: "sideband sub."
         correlation: "corr"
@@ -135,7 +135,7 @@ categories:
                             sidebandleftonly: [true]
 
     feeddown:
-        activate: no
+        activate: yes
         processor: false
         label: "feed-down"
         correlation: "corr"
@@ -177,7 +177,7 @@ categories:
                         jet_r_shape:
                             xsec: [true]
     prior:
-        activate: no
+        activate: yes
         processor: true
         label: "prior"
         correlation: "corr"
@@ -194,7 +194,7 @@ categories:
                             doprior: [true]
                             niterunfoldingchosen: [4]
     regularisation:
-        activate: no
+        activate: yes
         processor: false
         label: "regularisation"
         correlation: "corr"
@@ -226,7 +226,7 @@ categories:
                         jet_r_shape:
                             xsection_inel: [54.91, 60.69]
     tracking:
-        activate: no 
+        activate: yes 
         processor: true
         label: "tracking eff."
         correlation: "corr"
@@ -329,9 +329,9 @@ categories:
         rms_both_sides: true
         variations:
             cutvar0:
-                activate: [  yes, yes , yes , yes , yes , yes , no , no , no , no , no , no , no , no , no  , no, no, no, no, no, no, no, no]
-               # activate: [no , no , yes, yes, yes, yes, no , yes, yes, yes, yes,  no , no , no, no, no, no, no , no , no , no , no, no]
-               #cutvar :   [80 , 79 , 78 , 77 , 76 , 75 , 74 , 73 , 72 , 71 , 69 , 68 , 67 , 66 , 65 , 63 , 60 , 55 , 50 , 45 , 40 , 35 , 30]
+                activate: [yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes, yes]
+               #activate: [no , no , yes, yes, yes, yes, no , yes, yes, yes, yes,  no , no , no , no , no , no , no , no , no , no , no , no]
+               #cutvar :  [80 , 79 , 78 , 77 , 76 , 75 , 74 , 73 , 72 , 71 , 69 , 68 , 67 , 66 , 65 , 63 , 60 , 55 , 50 , 45 , 40 , 35 , 30]
                 label: 
                     - "prob cut: 0.80"
                     - "prob cut: 0.79"

@@ -480,6 +480,8 @@ LcpK0spp:
       pythia8_prompt_variations_path: /data/PYTHIA8/trees_pythia8_pr_
       pythia8_prompt_variations: ["default", "colour2soft", "colour2soft"]
       pythia8_prompt_variations_legend: ["PYTHIA 8 (Monash)", "PYTHIA 8 SoftQCD, mode 2", " SoftQCD, mode 2 (scaled)"]
+      #pythia8_prompt_variations: ["default", "colour2soft"]
+      #pythia8_prompt_variations_legend: ["PYTHIA 8 (Monash)", "PYTHIA 8 SoftQCD, mode 2"]
 
       variations_db: ./data/data_prod_20210223/database_variations_LcpK0spp_jet_r_shape.yml
       inclusive_unc: ./data/data_prod_20210223/mlwp_rms_Binned.root

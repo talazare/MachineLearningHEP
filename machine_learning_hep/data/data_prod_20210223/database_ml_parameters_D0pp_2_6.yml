@@ -287,10 +287,11 @@ D0pp:
       compare_with_inclusive: false
       latexnamehadron: "D^{0}"
       latexnamedecay: "K^{#minus} #pi^{#plus}"
+      use_inclusive_systematics: false
 
       var_binning2: pt_jet
       var_binning2_gen: pt_gen_jet
-      latexbin2var: "#it{p}_{T}^{jet ch}"
+      latexbin2var: "#it{p}_{T, jet}^{ch}"
       sel_binmin2_reco: [3.0, 5.0, 7.0, 15.0] # rec jet pt bins (sel_binmin2_reco bins)
       sel_binmax2_reco:     [5.0, 7.0, 15.0, 30.0] # rec jet pt bins (sel_binmin2_reco bins)
       sel_binmin2_gen:  [3.0, 5.0, 7.0, 15.0] # gen jet pt bins (sel_binmin2_gen bins)
@@ -381,6 +382,8 @@ D0pp:
       powheg_prompt_variations: ["F1_R05","F05_R1","F2_R1","F1_R2","F2_R2","F05_R05","Mhigh","Mlow"]
 
       pythia8_prompt_variations_path: /data/PYTHIA8/trees_pythia8_pr_
+      #pythia8_prompt_variations: ["default","colour2soft"]
+      #pythia8_prompt_variations_legend:  ["PYTHIA 8 (Monash)","PYTHIA 8 SoftQCD, mode 2"]
       pythia8_prompt_variations: ["default","colour2soft", "colour2soft"]
       pythia8_prompt_variations_legend:  ["PYTHIA 8 (Monash)","PYTHIA 8 SoftQCD, mode 2", "SoftQCD, mode 2 (scaled)"]
 
