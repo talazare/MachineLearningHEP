@@ -646,7 +646,8 @@ def setup_canvas(can):
     can.SetRightMargin(0.02)
     can.cd()
 
-def setup_legend(legend, textsize=0.03):
+def setup_legend(legend,
+        textsize=0.03):
     legend.SetBorderSize(0)
     legend.SetFillColor(0)
     legend.SetFillStyle(0)

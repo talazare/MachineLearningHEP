@@ -373,7 +373,7 @@ LcpK0spp:
       lc_d0_ratio: false
       compare_with_inclusive: false 
       xsec: false 
-      use_inclusive_systematics: false
+      use_inclusive_systematics: true
       
       latexnamehadron: "#Lambda_{c}^{#plus}"
       latexnamedecay: "p K^{0}_{S}"
