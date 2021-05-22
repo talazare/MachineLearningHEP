@@ -331,9 +331,9 @@ LcpK0spp:
 
   mlapplication:
     data:
-      pkl_skimmed_dec: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_data/593_20210223-2051/pklskdec,
-                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_data/593_20210223-2051/pklskdec,
-                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_data/593_20210223-2051/pklskdec] #list of periods
+      pkl_skimmed_dec: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_data/593_20210223-2051/pklskdec_old_HP_TOF_masked,
+                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_data/593_20210223-2051/pklskdec_old_HP_TOF_masked,
+                        /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_data/593_20210223-2051/pklskdec_old_HP_TOF_masked] #list of periods
       pkl_skimmed_decmerged: [/data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2016_data/593_20210223-2051/pklskdecmerged,
                               /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2017_data/593_20210223-2051/pklskdecmerged,
                               /data/Derived/LckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_2018_data/593_20210223-2051/pklskdecmerged] #list of periods
@@ -371,7 +371,10 @@ LcpK0spp:
       usejetptbinned_deff: false
       # do_eff_fold: false
       lc_d0_ratio: false
-
+      compare_with_inclusive: false 
+      xsec: false 
+      use_inclusive_systematics: true
+      
       latexnamehadron: "#Lambda_{c}^{#plus}"
       latexnamedecay: "p K^{0}_{S}"
 
