@@ -144,7 +144,7 @@ categories:
         rms_both_sides: true
         variations:
             tune:
-                activate: [no, no, no, no, no, no, no, no, no]
+                activate: [yes, yes, yes, yes, yes, yes, yes, yes, yes]
                 label:
                     - "#it{f}_{F} = 1, #it{f}_{R} = 0.5"
                     - "#it{f}_{F} = 0.5, #it{f}_{R} = 1"

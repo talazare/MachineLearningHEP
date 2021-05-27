@@ -239,7 +239,7 @@ LcpK0spp:
       seedmerge: [12,12,12] #list of periods
       period: [LHC16pp,LHC17pp,LHC18pp] #list of periods
       select_children: [["child_1", "child_2","child_3", "child_4","child_5","child_6","child_7","child_8","child_9","child_10"],
-                        ["child_11", "child_12","child_13", "child_14","child_15","child_16","child_17","child_18","child_19","child_20", "child_21"], 
+                        ["child_12","child_13", "child_14","child_15","child_16","child_17","child_18","child_19","child_20", "child_21"],
                         ["child_22","child_23", "child_24","child_25", "child_26","child_27","child_28","child_29","child_30","child_31","child_32", "child_33", "child_34", "child_35"]] # select children explicitly corresponding to each year
       unmerged_tree_dir: [/data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged,
                           /data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged,
@@ -371,10 +371,10 @@ LcpK0spp:
       usejetptbinned_deff: false
       # do_eff_fold: false
       lc_d0_ratio: false
-      compare_with_inclusive: false 
-      xsec: false 
+      compare_with_inclusive: false
+      xsec: false
       use_inclusive_systematics: true
-      
+
       latexnamehadron: "#Lambda_{c}^{#plus}"
       latexnamedecay: "p K^{0}_{S}"
 
@@ -463,7 +463,7 @@ LcpK0spp:
       sidebandleftonly: false
 
       niterunfolding: 15
-      niterunfoldingchosen: 4 
+      niterunfoldingchosen: 4
 
       branching_ratio: 1.09e-2
       xsection_inel: 57.8

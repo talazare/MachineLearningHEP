@@ -340,16 +340,11 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
                                          self.p_mass_fit_lim[0], self.p_mass_fit_lim[1])
                     h_invmass_refl = TH1F("hmass_refl" + suffix, "", self.p_num_bins,
                                           self.p_mass_fit_lim[0], self.p_mass_fit_lim[1])
-                    r_shape_mc = TH1F("r_shape_mc" + suffix, "",
-                            self.p_nbinshape_reco, 0,
-                            self.varshapebinarray_reco[-1])
                     fill_hist(h_invmass_sig, df_bin_sig.inv_mass)
                     fill_hist(h_invmass_refl, df_bin_refl.inv_mass)
-                    fill_hist(r_shape_mc, df_bin.delta_r_jet)
                     myfile.cd()
                     h_invmass_sig.Write()
                     h_invmass_refl.Write()
-                    r_shape_mc.Write()
 
 
     # pylint: disable=line-too-long
@@ -733,6 +728,7 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
             else:
                 df_mc_gen = pickle.load(openfile(self.mptfiles_recoskmldec[iptskim][index], "rb"))
             df_mc_gen = adjust_nsd(df_mc_gen)
+            print(self.mptfiles_recoskmldec[iptskim][index], self.mptfiles_recosk[iptskim][index])
             if self.s_evtsel is not None:
                 df_mc_gen = df_mc_gen.query(self.s_evtsel)
             if self.s_jetsel_reco is not None:
@@ -773,7 +769,6 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
 
         df_gen_nonprompt = df_gen[df_gen.ismcfd == 1]
         df_gen_prompt = df_gen[df_gen.ismcprompt == 1]
-        out_file.cd()
         df_mc_reco_merged_nonprompt = df_mc_reco[df_mc_reco.ismcfd == 1]
         df_mc_reco_merged_prompt = df_mc_reco[df_mc_reco.ismcprompt == 1]
 
@@ -992,55 +987,6 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
         hz_genvsreco_full_real.Scale(1.0 / hz_genvsreco_full_real.Integral())
         hz_genvsreco_full_real.Write()
 
-        for ibin2 in range(self.p_nbin2_gen):
-
-            suffix = "%s_%.2f_%.2f" % (self.v_var2_binning, \
-                self.lvar2_binmin_reco[ibin2], self.lvar2_binmax_reco[ibin2])
-            df_ibin_pr = seldf_singlevar(df_tmp_selrecogen_pr, \
-                    "pt_jet", self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2])
-            df_ibin_prompt = seldf_singlevar(df_ibin_pr, \
-                    "pt_cand", self.lpt_finbinmin[0], self.lpt_finbinmax[-1])
-            df_ibin_nonpr = seldf_singlevar(df_tmp_selrecogen, \
-                    "pt_jet", self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2])
-            df_ibin_nonprompt = seldf_singlevar(df_ibin_nonpr, \
-                    "pt_cand", self.lpt_finbinmin[0], self.lpt_finbinmax[-1])
-            hz_full_pr = TH1F("hz_full_prompt" + suffix, "hz_full_prompt" + suffix, len(self.lvarshape_binmin_gen), \
-                        self.lvarshape_binmin_gen[0], self.lvarshape_binmax_gen[-1])
-            fill_hist(hz_full_pr, df_ibin_prompt[self.v_varshape_binning_gen])
-            hz_full_pr.Write()
-
-            hz_full_npr = TH1F("hz_full_nonprompt" + suffix, "hz_full_nonprompt" + suffix, len(self.lvarshape_binmin_gen), \
-                         self.lvarshape_binmin_gen[0], self.lvarshape_binmax_gen[-1])
-            fill_hist(hz_full_npr, df_ibin_nonprompt[self.v_varshape_binning_gen])
-            hz_full_npr.Write()
-
-
-            for ipt in range(self.p_nptfinbins):
-                suffix = "%s_%.2f_%.2f_pt_%.2f_%.2f" % (self.v_var2_binning,
-                                       self.lvar2_binmin_gen[ibin2],
-                                       self.lvar2_binmax_gen[ibin2],
-                                       self.lpt_finbinmin[ipt],
-                                       self.lpt_finbinmax[ipt])
-                df_ipt_prompt = seldf_singlevar(df_ibin_prompt, \
-                        "pt_cand", self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt])
-                df_ipt_nonprompt = seldf_singlevar(df_ibin_nonprompt, \
-                        "pt_cand", self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt])
-                hz_pr = TH1F("hz_prompt" + suffix, "hz_prompt" + suffix, len(self.lvarshape_binmin_gen), \
-                        self.lvarshape_binmin_gen[0], self.lvarshape_binmax_gen[-1])
-                fill_hist(hz_pr, df_ipt_prompt[self.v_varshape_binning_gen])
-                #nrm_pr = hz_pr.Integral()
-                #if nrm_pr:
-                #    hz_pr.Scale(1.0 / nrm_pr)
-                hz_pr.Write()
-
-                hz_npr = TH1F("hz_nonprompt" + suffix, "hz_nonprompt" + suffix, len(self.lvarshape_binmin_gen), \
-                        self.lvarshape_binmin_gen[0], self.lvarshape_binmax_gen[-1])
-                fill_hist(hz_npr, df_ipt_nonprompt[self.v_varshape_binning_gen])
-                #nrm_npr = hz_npr.Integral()
-                #if nrm_npr:
-                #    hz_npr.Scale(1.0 / nrm_npr)
-                hz_npr.Write()
-
         if self.doeff_resp:
             df_tmp_selrecogen = self.effcorr_response(df_tmp_selrecogen)
         for row in df_tmp_selrecogen.itertuples():
@@ -1181,17 +1127,6 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
                 hz_fracdiff_pr.Scale(1.0 / norm_pr)
             hz_fracdiff_pr.Write()
 
-
-            hz_diff = TH1F("hz_fracdiff" + suffix,
-                                  "hz_fracdiff" + suffix, 100, -10, 10)
-            fill_hist(hz_diff, (dtmp_prompt_zgen[self.v_varshape_binning_gen] - \
-                    dtmp_nonprompt_zgen[self.v_varshape_binning_gen])/dtmp_prompt_zgen[self.v_varshape_binning_gen])
-            nrm = hz_diff.Integral()
-            if nrm:
-                hz_diff.Scale(1.0 / nrm)
-            hz_diff.Write()
-
-
         for ibin2 in range(self.p_nbin2_gen):
             dtmp_nonprompt_jetptgen = seldf_singlevar(df_mc_reco_merged_nonprompt, \
                 "pt_gen_jet", self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2])
@@ -1317,19 +1252,15 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
                 print("WARNING! RESPONSE MATRIX IS 0 WEIGHTED")
             response_matrix_pr.Fill(getattr(row, self.v_varshape_binning), row.pt_jet,\
                 getattr(row, self.v_varshape_binning_gen), row.pt_gen_jet, response_matrix_weight)
-        if self.doeff_resp:
-            df_tmp_selrecogen_pr_train = self.effcorr_response(df_tmp_selrecogen_pr_train)
         for row in df_tmp_selrecogen_pr_train.itertuples():
             response_matrix_weight = 1.0
-            weight = 1
             if self.doprior is True:
                 binx = hzvsjetpt_prior_weights.GetXaxis().FindBin(getattr(row, self.v_varshape_binning_gen))
                 biny = hzvsjetpt_prior_weights.GetYaxis().FindBin(row.pt_gen_jet)
                 weight = hzvsjetpt_prior_weights.GetBinContent(binx, biny)
-            if self.doeff_resp:
-                weight = row.eff * weight
-            if weight > 0.0:
-                response_matrix_weight = 1.0/weight
+
+                if weight > 0.0:
+                    response_matrix_weight = 1.0/weight
             response_matrix_closure_pr.Fill(getattr(row, self.v_varshape_binning), row.pt_jet,\
                 getattr(row, self.v_varshape_binning_gen), row.pt_gen_jet, response_matrix_weight)
             #response_matrix_closure_pr.Fill(getattr(row, self.v_varshape_binning), row.pt_jet,\
