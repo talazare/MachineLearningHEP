@@ -127,10 +127,11 @@ class AnalyzerJet(Analyzer):
         self.p_massmax = datap["analysis"][self.typean]["massmax"]
         self.p_rebin = datap["analysis"][self.typean]["rebin"]
         self.p_fix_mean = datap["analysis"][self.typean]["fix_mean"]
+        self.p_fix_sigma = datap["analysis"][self.typean].get("fix_sigma", None)
         self.p_set_fix_sigma= \
-        datap["analysis"][self.typean]["SetFixGaussianSigma"]
+        datap["analysis"][self.typean].get("SetFixGaussianSigma", False)
         self.p_set_initial_sigma = \
-        datap["analysis"][self.typean]["SetInitialGaussianSigma"]
+        datap["analysis"][self.typean].get("SetInitialGaussianSigma", True)
         self.p_sigmaarray = datap["analysis"][self.typean]["sigmaarray"]
         #self.p_masspeaksec = None
         self.p_fix_sigmasec = None
@@ -141,7 +142,7 @@ class AnalyzerJet(Analyzer):
             self.p_sigmaarraysec = datap["analysis"][self.typean]["sigmaarraysec"]
 
         # efficiency calculation
-        self.doeff_resp = datap["analysis"][self.typean]["doeff_resp"]
+        self.doeff_resp = datap["analysis"][self.typean].get("doeff_resp", True)
 
         # sideband subtraction
         self.signal_sigma = \
@@ -287,9 +288,9 @@ class AnalyzerJet(Analyzer):
         self.fontsize = 0.035
         self.opt_leg_g = "FP" # for systematic uncertanties in the legend
         self.opt_plot_g = "2"
-        self.x_latex = 0.145
+        self.x_latex = 0.15
         self.y_latex_top = 0.88
-        self.y_step = 0.056
+        self.y_step = 0.0595
         # axes titles
         self.title_x = self.v_varshape_latex
         self.title_y = "(1/#it{N}_{jet}) d#it{N}/d%s" % self.v_varshape_latex
@@ -299,11 +300,11 @@ class AnalyzerJet(Analyzer):
         #self.text_alice = "ALICE Preliminary, pp, #sqrt{#it{s}} = 13 TeV"
         self.text_alice = "ALICE Preliminary"
         self.text_jets = "%s-tagged charged jets, anti-#it{k}_{T}, #it{R} = 0.4" % self.p_latexnhadron
-        self.text_jets_ratio = "HF-tagged charged jets, anti-#it{k}_{T}, #it{R} = 0.4"
-        self.text_ptjet = "%g #leq %s < %g GeV/#it{c}, #left|#it{#eta}_{jet}#right| #leq 0.5"
-        self.text_pth = "%g #leq #it{p}_{T}^{%s} < %g GeV/#it{c}, #left|#it{y}_{%s}#right| #leq 0.8"
+        self.text_jets_ratio = "#Lambda_{c}^{+}, D^{0} -tagged charged jets, anti-#it{k}_{T}, #it{R} = 0.4"
+        self.text_ptjet = "%g < %s < %g GeV/#it{c}, |#it{#eta}_{jet}| < 0.5"
+        self.text_pth = "%g < #it{p}_{T}^{%s} < %g GeV/#it{c}, |#it{y}| < 0.8"
         self.text_sd = "Soft Drop (#it{z}_{cut} = 0.1, #it{#beta} = 0)"
-        self.text_acc_h = "#left|#it{y}_{%s}#right| #leq 0.8" % self.p_latexnhadron
+        self.text_acc_h = "|#it{y}| < 0.8"
         self.text_powheg = "POWHEG + PYTHIA 6 + EvtGen"
 
     def makeratio(self, origin_histo, option, lc_histoname):
@@ -1388,7 +1389,7 @@ class AnalyzerJet(Analyzer):
                 # preliminary figure
                 if ibin2 in [1] and ipt in [4, 5]:
                     text_ptjet_full = self.text_ptjet % (self.lvar2_binmin_reco[ibin2], self.p_latexbin2var, self.lvar2_binmax_reco[ibin2])
-                    text_pth_full = self.text_pth % (self.lpt_finbinmin[ipt], self.p_latexnhadron, min(self.lpt_finbinmax[ipt], self.lvar2_binmax_reco[ibin2]), self.p_latexnhadron)
+                    text_pth_full = self.text_pth % (self.lpt_finbinmin[ipt], self.p_latexnhadron, min(self.lpt_finbinmax[ipt], self.lvar2_binmax_reco[ibin2]))
                     if self.shape == "zg":
                         leg_pos = [.15, .15, .30, .30]
                     elif self.shape == "rg":
@@ -1403,10 +1404,10 @@ class AnalyzerJet(Analyzer):
                     markers = [get_marker(i) for i in [0, 1, 2]]
                     y_margin_up = 0.4
                     y_margin_down = 0.05
-                    c_sb_sub, list_obj_new = make_plot("c_sb_sub_" + suffix, size=self.size_can, \
-                        list_obj=list_obj, labels_obj=labels_obj, opt_leg_g=self.opt_leg_g, opt_plot_g=self.opt_plot_g, offsets_xy=self.offsets_axes, \
-                        colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[y_margin_down, y_margin_up], margins_c=self.margins_can, \
-                        title=";%s;yield" % self.title_x, logscale="y")
+                    #c_sb_sub, list_obj_new = make_plot("c_sb_sub_" + suffix, size=self.size_can, \
+                    #    list_obj=list_obj, labels_obj=labels_obj, opt_leg_g=self.opt_leg_g, opt_plot_g=self.opt_plot_g, offsets_xy=self.offsets_axes, \
+                    #    colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[y_margin_down, y_margin_up], margins_c=self.margins_can, \
+                    #    title=";%s;yield" % self.title_x, logscale="y")
                     list_obj_new[0].SetTextSize(self.fontsize)
                     if self.shape == "nsd":
                         list_obj_new[1].GetXaxis().SetNdivisions(5)
@@ -1513,7 +1514,7 @@ class AnalyzerJet(Analyzer):
             hrelsig.Draw("colz")
             gStyle.SetPaintTextFormat(".2f")
             hrelsig.Draw("text same")
-            draw_latex(latex, textsize=0.033)
+            draw_latex(latex, textsize=0.04)
             crelsig.SaveAs("%s/sideband_relsig_%s.eps" % (self.d_resultsallpdata, suffix))
 
             crelunc = TCanvas("crelunc_" + suffix, "crelunc_" + suffix)
@@ -1527,7 +1528,7 @@ class AnalyzerJet(Analyzer):
             hrelunc.Draw("colz")
             gStyle.SetPaintTextFormat(".2f")
             hrelunc.Draw("text same")
-            draw_latex(latex, textsize=0.033)
+            draw_latex(latex, textsize=0.04)
             crelunc.SaveAs("%s/sideband_relunc_%s.eps" % (self.d_resultsallpdata, suffix))
 
             cworth = TCanvas("cworth_" + suffix, "cworth_" + suffix)
@@ -1541,7 +1542,7 @@ class AnalyzerJet(Analyzer):
             hworth.Draw("colz")
             gStyle.SetPaintTextFormat(".2f")
             hworth.Draw("text same")
-            draw_latex(latex, textsize=0.033)
+            draw_latex(latex, textsize=0.04)
             cworth.SaveAs("%s/sideband_worth_%s.eps" % (self.d_resultsallpdata, suffix))
 
             cimpincl = TCanvas("cimpincl_" + suffix, "cimpincl_" + suffix)
@@ -1556,7 +1557,7 @@ class AnalyzerJet(Analyzer):
             himpincl.Draw("colz")
             gStyle.SetPaintTextFormat(".2f")
             himpincl.Draw("text same")
-            draw_latex(latex, textsize=0.033)
+            draw_latex(latex, textsize=0.04)
             cimpincl.SaveAs("%s/sideband_impincl_%s.eps" % (self.d_resultsallpdata, suffix))
 
             cimpexcl = TCanvas("cimpexcl_" + suffix, "cimpexcl_" + suffix)
@@ -1571,7 +1572,7 @@ class AnalyzerJet(Analyzer):
             himpexcl.Draw("colz")
             gStyle.SetPaintTextFormat(".2f")
             himpexcl.Draw("text same")
-            draw_latex(latex, textsize=0.033)
+            draw_latex(latex, textsize=0.04)
             cimpexcl.SaveAs("%s/sideband_impexcl_%s.eps" % (self.d_resultsallpdata, suffix))
 
             cimptest = TCanvas("cimptest_" + suffix, "cimptest_" + suffix)
@@ -1586,7 +1587,7 @@ class AnalyzerJet(Analyzer):
             himptest.Draw("colz")
             gStyle.SetPaintTextFormat("g")
             himptest.Draw("text same")
-            draw_latex(latex, textsize=0.033)
+            draw_latex(latex, textsize=0.04)
             cimptest.SaveAs("%s/sideband_imptest_%s.eps" % (self.d_resultsallpdata, suffix))
 
             gStyle.SetPaintTextFormat("g")
@@ -1690,11 +1691,6 @@ class AnalyzerJet(Analyzer):
 
         hjetpt_fracdiff_list = []
         hz_fracdiff_list = []
-        hz_diff_list = []
-        ptjet_list_pr = []
-        ptjet_list_npr = []
-        ipt_list_pr = []
-        ipt_list_npr = []
         heff_pr_list = []
         heff_fd_list = []
         input_data_zvsjetpt_list = []
@@ -1855,21 +1851,7 @@ class AnalyzerJet(Analyzer):
 
             hjetpt_fracdiff_list.append( \
                 feeddown_input_file.Get("hjetpt_fracdiff_nonprompt" + suffix))
-            print("hz_full_prompt", suffix)
-            ptjet_list_pr.append(feeddown_input_file.Get("hz_full_prompt" + suffix))
-            ptjet_list_npr.append(feeddown_input_file.Get("hz_full_nonprompt" + suffix))
-            ipt_pr = []
-            ipt_npr = []
-            for ipt in range(self.p_nptfinbins):
-                suffix = "%s_%.2f_%.2f_pt_%.2f_%.2f" % \
-                         (self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
-                          self.lvar2_binmax_gen[ibin2],
-                          self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt])
-                print("hz_prompt,", suffix)
-                ipt_pr.append(feeddown_input_file.Get("hz_prompt" + suffix))
-                ipt_npr.append(feeddown_input_file.Get("hz_nonprompt" + suffix))
-            ipt_list_pr.append(ipt_pr)
-            ipt_list_npr.append(ipt_npr)
+
             heff_pr_list.append(file_eff.Get("eff_mult%d" % ibin2))
             heff_fd_list.append(file_eff.Get("eff_fd_mult%d" % ibin2))
 
@@ -1883,7 +1865,7 @@ class AnalyzerJet(Analyzer):
             y_min_h = 0
             y_margin_up = 0.05
             y_margin_down = 0
-            #bin_pt_max = min(self.p_nptfinbins, heff_pr_list[ibin2].GetXaxis().FindBin(self.lvar2_binmax_gen[ibin2] - 0.01))
+            bin_pt_max = min(self.p_nptfinbins, heff_pr_list[ibin2].GetXaxis().FindBin(self.lvar2_binmax_gen[ibin2] - 0.01))
             heff_pr_list[ibin2].GetYaxis().SetRangeUser(*get_plot_range(y_min_h, y_max_h, y_margin_down, y_margin_up))
             heff_pr_list[ibin2].GetXaxis().SetRange(1, self.p_nptfinbins)
             heff_pr_list[ibin2].SetTitle("")
@@ -1963,150 +1945,150 @@ class AnalyzerJet(Analyzer):
 
         # plot relative shape shift
 
-        for ibin2 in range(self.p_nbin2_gen):
-            cptjet_diff = TCanvas("cptjet_diff %d" % ibin2, "prompt&nonprompt differences")
-            setup_canvas(cptjet_diff)
-            leg_pt_diff = TLegend(.18, .70, .35, .85)
-            setup_legend(leg_pt_diff)
-            print(ptjet_list_pr, ptjet_list_npr)
-            if ptjet_list_pr[ibin2].Integral(1, ptjet_list_pr[ibin2].FindBin(self.lvarshape_binmin_gen[-1]))!=0:
-                if ptjet_list_npr[ibin2].Integral(1, ptjet_list_npr[ibin2].FindBin(self.lvarshape_binmin_gen[-1]))!=0:
-                    ptjet_list_pr[ibin2].Scale(1.0 / ptjet_list_pr[ibin2].Integral(1, ptjet_list_pr[ibin2].FindBin(self.lvarshape_binmin_gen[-1])), "width")
-                    ptjet_list_npr[ibin2].Scale(1.0 / ptjet_list_npr[ibin2].Integral(1, ptjet_list_npr[ibin2].FindBin(self.lvarshape_binmin_gen[-1])), "width")
-            else:
-                continue
+        #for ibin2 in range(self.p_nbin2_gen):
+        #    cptjet_diff = TCanvas("cptjet_diff %d" % ibin2, "prompt&nonprompt differences")
+        #    setup_canvas(cptjet_diff)
+        #    leg_pt_diff = TLegend(.18, .70, .35, .85)
+        #    setup_legend(leg_pt_diff)
+        #    print(ptjet_list_pr, ptjet_list_npr)
+        #    if ptjet_list_pr[ibin2].Integral(1, ptjet_list_pr[ibin2].FindBin(self.lvarshape_binmin_gen[-1]))!=0:
+        #        if ptjet_list_npr[ibin2].Integral(1, ptjet_list_npr[ibin2].FindBin(self.lvarshape_binmin_gen[-1]))!=0:
+        #            ptjet_list_pr[ibin2].Scale(1.0 / ptjet_list_pr[ibin2].Integral(1, ptjet_list_pr[ibin2].FindBin(self.lvarshape_binmin_gen[-1])), "width")
+        #            ptjet_list_npr[ibin2].Scale(1.0 / ptjet_list_npr[ibin2].Integral(1, ptjet_list_npr[ibin2].FindBin(self.lvarshape_binmin_gen[-1])), "width")
+        #    else:
+        #        continue
 
-            setup_histogram(ptjet_list_pr[ibin2], get_colour(1), get_marker(2))
-            _, y_max_h = get_y_window_his(ptjet_list_npr[ibin2], ptjet_list_pr[ibin2])
-            leg_pt_diff.AddEntry(ptjet_list_pr[ibin2] , "prompt", "P")
-            ptjet_list_pr[ibin2].SetTitle("")
-            ptjet_list_pr[ibin2].SetXTitle("%s" % self.v_varshape_latex)
-            y_margin_up = 0.15
-            y_margin_down = 0.05
-            ptjet_list_pr[ibin2].GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
-            ptjet_list_pr[ibin2].Draw()
-            setup_histogram(ptjet_list_npr[ibin2], get_colour(2), get_marker(2))
-            leg_pt_diff.AddEntry(ptjet_list_npr[ibin2] , "non-prompt", "P")
-            ptjet_list_npr[ibin2].Draw("same")
-            leg_pt_diff.Draw("same")
-            cptjet_diff.SaveAs("%s/pr_npr_difference_%s_%.2f_%.2f.eps" % \
-                      (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
-                       self.lvar2_binmax_gen[ibin2]))
-            c_ratio_ptjet_diff = TCanvas("c_ratio_ptjet_diff %d" % ipt, "prompt&nonprompt ratio_ptjet")
-            setup_canvas(c_ratio_ptjet_diff)
-            leg_ratio_ptjet_diff = TLegend(.18, .70, .35, .85)
-            setup_legend(leg_ratio_ptjet_diff)
-            ratio_ptjet_hist = ptjet_list_pr[ibin2].Clone("ratio_ptjet_hist")
-            ratio_ptjet_hist.Divide(ptjet_list_npr[ibin2])
-            setup_histogram(ratio_ptjet_hist, get_colour(1), get_marker(1))
-            _, y_max_h = get_y_window_his(ratio_ptjet_hist)
-            ratio_ptjet_hist.SetTitle("Ratio of prompt/nonprompt generated component")
-            ratio_ptjet_hist.SetXTitle("%s" % self.v_varshape_latex)
-            ratio_ptjet_hist.SetYTitle("prompt/nonprompt")
-            y_margin_up = 0.25
-            y_margin_down = 0.05
-            ratio_ptjet_hist.GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
-            ratio_ptjet_hist.Draw()
-            c_ratio_ptjet_diff.SaveAs("%s/pr_npr_ratio_ptjet_%s_%.2f_%.2f.eps" % \
-                    (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2]))
-            for ipt in range(self.p_nptfinbins):
-                c_ipt_diff = TCanvas("c_ipt_diff %d" % ipt, "prompt&nonprompt differences")
-                setup_canvas(c_ipt_diff)
-                leg_ipt_diff = TLegend(.18, .70, .35, .85)
-                setup_legend(leg_ipt_diff)
-                if ipt_list_pr[ibin2][ipt].Integral(1, ipt_list_pr[ibin2][ipt].FindBin(self.lvarshape_binmin_gen[-1]))!=0:
-                    if ipt_list_npr[ibin2][ipt].Integral(1, ipt_list_npr[ibin2][ipt].FindBin(self.lvarshape_binmin_gen[-1]))!=0:
-                        ipt_list_pr[ibin2][ipt].Scale(1.0 / ipt_list_pr[ibin2][ipt].Integral(1, ipt_list_pr[ibin2][ipt].FindBin(self.lvarshape_binmin_gen[-1])), "width")
-                        ipt_list_npr[ibin2][ipt].Scale(1.0 / ipt_list_npr[ibin2][ipt].Integral(1, ipt_list_npr[ibin2][ipt].FindBin(self.lvarshape_binmin_gen[-1])), "width")
-                else:
-                    continue
-                setup_histogram(ipt_list_pr[ibin2][ipt], get_colour(1), get_marker(1))
-                _, y_max_h = get_y_window_his(ipt_list_npr[ibin2][ipt], ipt_list_pr[ibin2][ipt])
-                leg_ipt_diff.AddEntry(ipt_list_pr[ibin2][ipt] , "prompt", "P")
-                ipt_list_pr[ibin2][ipt].SetTitle("")
-                ipt_list_pr[ibin2][ipt].SetXTitle("%s" % self.v_varshape_latex)
-                ipt_list_pr[ibin2][ipt].SetYTitle("self normalized yield")
-                y_margin_up = 0.25
-                y_margin_down = 0.05
-                ipt_list_pr[ibin2][ipt].GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
-                ipt_list_pr[ibin2][ipt].Draw()
-                setup_histogram(ipt_list_npr[ibin2][ipt], get_colour(2), get_marker(2))
-                leg_ipt_diff.AddEntry(ipt_list_npr[ibin2][ipt] , "non-prompt", "P")
-                ipt_list_npr[ibin2][ipt].Draw("same")
-                leg_ipt_diff.Draw("same")
-                c_ipt_diff.SaveAs("%s/pr_npr_difference_%s_%.2f_%.2f_pt_cand_%.2f_%.2f.eps" % \
-                          (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
-                           self.lvar2_binmax_gen[ibin2],
-                           self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt]))
+        #    setup_histogram(ptjet_list_pr[ibin2], get_colour(1), get_marker(2))
+        #    _, y_max_h = get_y_window_his(ptjet_list_npr[ibin2], ptjet_list_pr[ibin2])
+        #    leg_pt_diff.AddEntry(ptjet_list_pr[ibin2] , "prompt", "P")
+        #    ptjet_list_pr[ibin2].SetTitle("")
+        #    ptjet_list_pr[ibin2].SetXTitle("%s" % self.v_varshape_latex)
+        #    y_margin_up = 0.15
+        #    y_margin_down = 0.05
+        #    ptjet_list_pr[ibin2].GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
+        #    ptjet_list_pr[ibin2].Draw()
+        #    setup_histogram(ptjet_list_npr[ibin2], get_colour(2), get_marker(2))
+        #    leg_pt_diff.AddEntry(ptjet_list_npr[ibin2] , "non-prompt", "P")
+        #    ptjet_list_npr[ibin2].Draw("same")
+        #    leg_pt_diff.Draw("same")
+        #    cptjet_diff.SaveAs("%s/pr_npr_difference_%s_%.2f_%.2f.eps" % \
+        #              (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
+        #               self.lvar2_binmax_gen[ibin2]))
+        #    c_ratio_ptjet_diff = TCanvas("c_ratio_ptjet_diff %d" % ipt, "prompt&nonprompt ratio_ptjet")
+        #    setup_canvas(c_ratio_ptjet_diff)
+        #    leg_ratio_ptjet_diff = TLegend(.18, .70, .35, .85)
+        #    setup_legend(leg_ratio_ptjet_diff)
+        #    ratio_ptjet_hist = ptjet_list_pr[ibin2].Clone("ratio_ptjet_hist")
+        #    ratio_ptjet_hist.Divide(ptjet_list_npr[ibin2])
+        #    setup_histogram(ratio_ptjet_hist, get_colour(1), get_marker(1))
+        #    _, y_max_h = get_y_window_his(ratio_ptjet_hist)
+        #    ratio_ptjet_hist.SetTitle("Ratio of prompt/nonprompt generated component")
+        #    ratio_ptjet_hist.SetXTitle("%s" % self.v_varshape_latex)
+        #    ratio_ptjet_hist.SetYTitle("prompt/nonprompt")
+        #    y_margin_up = 0.25
+        #    y_margin_down = 0.05
+        #    ratio_ptjet_hist.GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
+        #    ratio_ptjet_hist.Draw()
+        #    c_ratio_ptjet_diff.SaveAs("%s/pr_npr_ratio_ptjet_%s_%.2f_%.2f.eps" % \
+        #            (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2]))
+        #    for ipt in range(self.p_nptfinbins):
+        #        c_ipt_diff = TCanvas("c_ipt_diff %d" % ipt, "prompt&nonprompt differences")
+        #        setup_canvas(c_ipt_diff)
+        #        leg_ipt_diff = TLegend(.18, .70, .35, .85)
+        #        setup_legend(leg_ipt_diff)
+        #        if ipt_list_pr[ibin2][ipt].Integral(1, ipt_list_pr[ibin2][ipt].FindBin(self.lvarshape_binmin_gen[-1]))!=0:
+        #            if ipt_list_npr[ibin2][ipt].Integral(1, ipt_list_npr[ibin2][ipt].FindBin(self.lvarshape_binmin_gen[-1]))!=0:
+        #                ipt_list_pr[ibin2][ipt].Scale(1.0 / ipt_list_pr[ibin2][ipt].Integral(1, ipt_list_pr[ibin2][ipt].FindBin(self.lvarshape_binmin_gen[-1])), "width")
+        #                ipt_list_npr[ibin2][ipt].Scale(1.0 / ipt_list_npr[ibin2][ipt].Integral(1, ipt_list_npr[ibin2][ipt].FindBin(self.lvarshape_binmin_gen[-1])), "width")
+        #        else:
+        #            continue
+        #        setup_histogram(ipt_list_pr[ibin2][ipt], get_colour(1), get_marker(1))
+        #        _, y_max_h = get_y_window_his(ipt_list_npr[ibin2][ipt], ipt_list_pr[ibin2][ipt])
+        #        leg_ipt_diff.AddEntry(ipt_list_pr[ibin2][ipt] , "prompt", "P")
+        #        ipt_list_pr[ibin2][ipt].SetTitle("")
+        #        ipt_list_pr[ibin2][ipt].SetXTitle("%s" % self.v_varshape_latex)
+        #        ipt_list_pr[ibin2][ipt].SetYTitle("self normalized yield")
+        #        y_margin_up = 0.25
+        #        y_margin_down = 0.05
+        #        ipt_list_pr[ibin2][ipt].GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
+        #        ipt_list_pr[ibin2][ipt].Draw()
+        #        setup_histogram(ipt_list_npr[ibin2][ipt], get_colour(2), get_marker(2))
+        #        leg_ipt_diff.AddEntry(ipt_list_npr[ibin2][ipt] , "non-prompt", "P")
+        #        ipt_list_npr[ibin2][ipt].Draw("same")
+        #        leg_ipt_diff.Draw("same")
+        #        c_ipt_diff.SaveAs("%s/pr_npr_difference_%s_%.2f_%.2f_pt_cand_%.2f_%.2f.eps" % \
+        #                  (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
+        #                   self.lvar2_binmax_gen[ibin2],
+        #                   self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt]))
 
-                c_ratio_diff = TCanvas("c_ratio_diff %d" % ipt, "prompt&nonprompt ratio")
-                setup_canvas(c_ratio_diff)
-                leg_ratio_diff = TLegend(.18, .70, .35, .85)
-                setup_legend(leg_ratio_diff)
-                ratio_hist = ipt_list_pr[ibin2][ipt].Clone("ratio_hist")
-                ratio_hist.Divide(ipt_list_npr[ibin2][ipt])
-                setup_histogram(ratio_hist, get_colour(1), get_marker(1))
-                _, y_max_h = get_y_window_his(ratio_hist)
-                leg_ipt_diff.AddEntry(ratio_hist , "prompt", "P")
-                ratio_hist.SetTitle("Ratio of prompt/nonprompt generated component")
-                ratio_hist.SetXTitle("%s" % self.v_varshape_latex)
-                ratio_hist.SetYTitle("prompt/nonprompt")
-                y_margin_up = 0.25
-                y_margin_down = 0.05
-                ratio_hist.GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
-                ratio_hist.Draw()
-                c_ratio_diff.SaveAs("%s/pr_npr_ratio_%s_%.2f_%.2f_pt_cand_%.2f_%.2f.eps" % \
-                          (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
-                           self.lvar2_binmax_gen[ibin2],
-                           self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt]))
-        for ibinshape in range(self.p_nbinshape_gen):
-            suffix = "%s_%.2f_%.2f" % \
-                     (self.v_varshape_binning, self.lvarshape_binmin_gen[ibinshape], self.lvarshape_binmax_gen[ibinshape])
-            hz_fracdiff_list.append(feeddown_input_file.Get("hz_fracdiff_nonprompt" + suffix))
-            hz_diff_list.append(feeddown_input_file.Get("hz_fracdiff" + suffix))
+        #        c_ratio_diff = TCanvas("c_ratio_diff %d" % ipt, "prompt&nonprompt ratio")
+        #        setup_canvas(c_ratio_diff)
+        #        leg_ratio_diff = TLegend(.18, .70, .35, .85)
+        #        setup_legend(leg_ratio_diff)
+        #        ratio_hist = ipt_list_pr[ibin2][ipt].Clone("ratio_hist")
+        #        ratio_hist.Divide(ipt_list_npr[ibin2][ipt])
+        #        setup_histogram(ratio_hist, get_colour(1), get_marker(1))
+        #        _, y_max_h = get_y_window_his(ratio_hist)
+        #        leg_ipt_diff.AddEntry(ratio_hist , "prompt", "P")
+        #        ratio_hist.SetTitle("Ratio of prompt/nonprompt generated component")
+        #        ratio_hist.SetXTitle("%s" % self.v_varshape_latex)
+        #        ratio_hist.SetYTitle("prompt/nonprompt")
+        #        y_margin_up = 0.25
+        #        y_margin_down = 0.05
+        #        ratio_hist.GetYaxis().SetRangeUser(*get_plot_range(0, y_max_h, y_margin_down, y_margin_up))
+        #        ratio_hist.Draw()
+        #        c_ratio_diff.SaveAs("%s/pr_npr_ratio_%s_%.2f_%.2f_pt_cand_%.2f_%.2f.eps" % \
+        #                  (self.d_resultsallpdata, self.v_var2_binning, self.lvar2_binmin_gen[ibin2],
+        #                   self.lvar2_binmax_gen[ibin2],
+        #                   self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt]))
+        #for ibinshape in range(self.p_nbinshape_gen):
+        #    suffix = "%s_%.2f_%.2f" % \
+        #             (self.v_varshape_binning, self.lvarshape_binmin_gen[ibinshape], self.lvarshape_binmax_gen[ibinshape])
+        #    hz_fracdiff_list.append(feeddown_input_file.Get("hz_fracdiff_nonprompt" + suffix))
+        #    hz_diff_list.append(feeddown_input_file.Get("hz_fracdiff" + suffix))
 
-        cz_diff = TCanvas("cz_diff", "prompt z response fractional differences")
-        setup_canvas(cz_diff)
-        cz_diff.SetLogy()
-        leg_z_diff = TLegend(.15, .5, .25, .8, "%s" % self.v_varshape_latex)
-        setup_legend(leg_z_diff)
-        for ibinshape in range(self.p_nbinshape_gen):
-            setup_histogram(hz_diff_list[ibinshape], get_colour(ibinshape), get_marker(ibinshape))
-            leg_z_diff.AddEntry(hz_diff_list[ibinshape],"%g#minus%g" % (self.lvarshape_binmin_gen[ibinshape], \
-                    self.lvarshape_binmax_gen[ibinshape]), "P")
-            if ibinshape == 0:
-                hz_diff_list[ibinshape].SetTitle("")
-                hz_diff_list[ibinshape].SetXTitle("(%s^{pr} #minus %s^{nonpr})/%s^{pr}" % (self.v_varshape_latex, self.v_varshape_latex, self.v_varshape_latex))
-                _, y_max_h = get_y_window_his(hz_diff_list)
-                y_margin_up = 0.15
-                y_margin_down = 0.05
-                y_min_0 = min([h.GetMinimum(0) for h in hz_diff_list])
-                hz_diff_list[ibinshape].GetYaxis().SetRangeUser(*get_plot_range(y_min_0, y_max_h, y_margin_down, y_margin_up, True))
-            hz_diff_list[ibinshape].Draw("same")
-        leg_z_diff.Draw("same")
-        cz_diff.SaveAs("%s/response_pr_npr_diff_%s.eps" % (self.d_resultsallpdata, self.v_varshape_latex))
+        #cz_diff = TCanvas("cz_diff", "prompt z response fractional differences")
+        #setup_canvas(cz_diff)
+        #cz_diff.SetLogy()
+        #leg_z_diff = TLegend(.15, .5, .25, .8, "%s" % self.v_varshape_latex)
+        #setup_legend(leg_z_diff)
+        #for ibinshape in range(self.p_nbinshape_gen):
+        #    setup_histogram(hz_diff_list[ibinshape], get_colour(ibinshape), get_marker(ibinshape))
+        #    leg_z_diff.AddEntry(hz_diff_list[ibinshape],"%g#minus%g" % (self.lvarshape_binmin_gen[ibinshape], \
+        #            self.lvarshape_binmax_gen[ibinshape]), "P")
+        #    if ibinshape == 0:
+        #        hz_diff_list[ibinshape].SetTitle("")
+        #        hz_diff_list[ibinshape].SetXTitle("(%s^{pr} #minus %s^{nonpr})/%s^{pr}" % (self.v_varshape_latex, self.v_varshape_latex, self.v_varshape_latex))
+        #        _, y_max_h = get_y_window_his(hz_diff_list)
+        #        y_margin_up = 0.15
+        #        y_margin_down = 0.05
+        #        y_min_0 = min([h.GetMinimum(0) for h in hz_diff_list])
+        #        hz_diff_list[ibinshape].GetYaxis().SetRangeUser(*get_plot_range(y_min_0, y_max_h, y_margin_down, y_margin_up, True))
+        #    hz_diff_list[ibinshape].Draw("same")
+        #leg_z_diff.Draw("same")
+        #cz_diff.SaveAs("%s/response_pr_npr_diff_%s.eps" % (self.d_resultsallpdata, self.v_varshape_latex))
 
-        cz_fracdiff = TCanvas("cz_fracdiff ", "non-prompt z response fractional differences")
-        setup_canvas(cz_fracdiff)
-        cz_fracdiff.SetLogy()
-        leg_z_fracdiff = TLegend(.15, .5, .25, .8, "%s^{gen}" % self.v_varshape_latex)
-        setup_legend(leg_z_fracdiff)
-        for ibinshape in range(self.p_nbinshape_gen):
-            setup_histogram(hz_fracdiff_list[ibinshape], get_colour(ibinshape), get_marker(ibinshape))
-            leg_z_fracdiff.AddEntry(hz_fracdiff_list[ibinshape], \
-                "%g#minus%g" % (self.lvarshape_binmin_gen[ibinshape], \
-                self.lvarshape_binmax_gen[ibinshape]), "P")
-            if ibinshape == 0:
-                hz_fracdiff_list[ibinshape].SetTitle("")
-                hz_fracdiff_list[ibinshape].SetXTitle("(%s^{rec} #minus %s^{gen})/%s^{gen}" % (self.v_varshape_latex, self.v_varshape_latex, self.v_varshape_latex))
-                _, y_max_h = get_y_window_his(hz_fracdiff_list)
-                y_min_0 = min([h.GetMinimum(0) for h in hz_fracdiff_list])
-                y_margin_up = 0.15
-                y_margin_down = 0.05
-                hz_fracdiff_list[ibinshape].GetYaxis().SetRangeUser(*get_plot_range(y_min_0, y_max_h, y_margin_down, y_margin_up, True))
-            hz_fracdiff_list[ibinshape].Draw("same")
-        leg_z_fracdiff.Draw("same")
-        cz_fracdiff.SaveAs("%s/response_fd_reldiff_%s.eps" % (self.d_resultsallpdata, self.v_varshape_binning))
+        #cz_fracdiff = TCanvas("cz_fracdiff ", "non-prompt z response fractional differences")
+        #setup_canvas(cz_fracdiff)
+        #cz_fracdiff.SetLogy()
+        #leg_z_fracdiff = TLegend(.15, .5, .25, .8, "%s^{gen}" % self.v_varshape_latex)
+        #setup_legend(leg_z_fracdiff)
+        #for ibinshape in range(self.p_nbinshape_gen):
+        #    setup_histogram(hz_fracdiff_list[ibinshape], get_colour(ibinshape), get_marker(ibinshape))
+        #    leg_z_fracdiff.AddEntry(hz_fracdiff_list[ibinshape], \
+        #        "%g#minus%g" % (self.lvarshape_binmin_gen[ibinshape], \
+        #        self.lvarshape_binmax_gen[ibinshape]), "P")
+        #    if ibinshape == 0:
+        #        hz_fracdiff_list[ibinshape].SetTitle("")
+        #        hz_fracdiff_list[ibinshape].SetXTitle("(%s^{rec} #minus %s^{gen})/%s^{gen}" % (self.v_varshape_latex, self.v_varshape_latex, self.v_varshape_latex))
+        #        _, y_max_h = get_y_window_his(hz_fracdiff_list)
+        #        y_min_0 = min([h.GetMinimum(0) for h in hz_fracdiff_list])
+        #        y_margin_up = 0.15
+        #        y_margin_down = 0.05
+        #        hz_fracdiff_list[ibinshape].GetYaxis().SetRangeUser(*get_plot_range(y_min_0, y_max_h, y_margin_down, y_margin_up, True))
+        #    hz_fracdiff_list[ibinshape].Draw("same")
+        #leg_z_fracdiff.Draw("same")
+        #cz_fracdiff.SaveAs("%s/response_fd_reldiff_%s.eps" % (self.d_resultsallpdata, self.v_varshape_binning))
 
         # scale with the ratio of non-prompt/prompt efficiencies
 
@@ -2599,7 +2581,7 @@ class AnalyzerJet(Analyzer):
 
         # preliminary figure
         text_ptjet_full = self.text_ptjet % (self.lvar2_binmin_reco[0], self.p_latexbin2var, self.lvar2_binmax_reco[-1])
-        text_pth_full = self.text_pth % (self.lpt_finbinmin[0], self.p_latexnhadron, self.lpt_finbinmax[-1], self.p_latexnhadron)
+        text_pth_full = self.text_pth % (self.lpt_finbinmin[0], self.p_latexnhadron, self.lpt_finbinmax[-1])
         cz_genvsreco_full = TCanvas("cz_genvsreco_full", "response matrix 2D projection", 800, 800)
         setup_canvas(cz_genvsreco_full)
         cz_genvsreco_full.SetCanvasSize(900, 800)
@@ -3159,11 +3141,6 @@ class AnalyzerJet(Analyzer):
             draw_latex(latex)
             cunfolded_not_z.SaveAs("%s/unfolded_not_%s_%s.eps" % (self.d_resultsallpdata, self.v_varshape_binning, suffix_plot))
 
-            if self.lc_d0_ratio:
-                option = "unfolding_results"
-                lchistoname = ("unfolded_z_%d_%s" % (i_iter_choice, suffix))
-                print("Making Lc to D0 ratio for", option, lchistoname)
-                self.makeratio(unfolded_z_scaled_list[i_iter_choice][ibin_jetpt], option, lchistoname)
             # compare relative statistical uncertainties before unfolding and after
 
             h_unfolded_not_stat_error = TH1F("h_unfolded_not_stat_error" + suffix, "h_unfolded_not_stat_error" + suffix, self.p_nbinshape_reco, self.varshapebinarray_reco)
@@ -3267,6 +3244,7 @@ class AnalyzerJet(Analyzer):
         input_mc_det = unfolding_input_file.Get("input_closure_reco")
         input_mc_det.Multiply(hzvsjetpt_reco_eff)
         input_mc_gen = unfolding_input_file.Get("sample_closure")
+        #input_mc_gen = unfolding_input_file.Get("input_closure_gen")
         kinematic_eff = []
         hz_gen_nocuts = []
         input_mc_det_z = []
@@ -3317,10 +3295,6 @@ class AnalyzerJet(Analyzer):
                 unfolded_z = unfolded_zvsjetpt.ProjectionX("unfolded_z_%d_%s" % (i + 1, suffix), ibin2 + 1, ibin2 + 1, "e")
                 unfolded_z.Divide(kinematic_eff[ibin2])
                 unfolded_z.Scale(1.0 / unfolded_z.Integral(bin_int_first, -1))
-                canv_clo = TCanvas("test_%d_%s" % (i + 1, suffix))
-                unfolded_z.Draw()
-                input_mc_gen_z[ibin2].Draw("same")
-                canv_clo.SaveAs("%s/test_%d_%s.eps" % (self.d_resultsallpdata, i + 1, suffix))
                 unfolded_z.Divide(input_mc_gen_z[ibin2])
                 fileouts.cd()
                 unfolded_z.Write("closure_test_%d_%s" % (i + 1, suffix))
@@ -3902,7 +3876,6 @@ class AnalyzerJet(Analyzer):
                     for sys_var in range(self.systematic_variations[sys_cat]):
                         # FIXME exception for the untagged bin pylint: disable=fixme
                         bin_first = 2 if "untagged" in self.systematic_varlabels[sys_cat][sys_var] else 1
-                        print(self.systematic_catnames[sys_cat])
                         if self.use_inclusive_systematics:
                             if self.systematic_catnames[sys_cat] == "cuts":
                                 #file_inc = TFile.Open(self.inclusive_unc)
@@ -4251,7 +4224,8 @@ class AnalyzerJet(Analyzer):
 
             # plot the results with systematic uncertainties and models
 
-            leg_pos = [.62, 0.60, .80, .87]
+            #leg_pos = [.55, 0.505, 0.73, .63]
+            leg_pos = [.148, 0.425, .34, .55]
 
             cfinalwsys_wmodels = TCanvas("cfinalwsys_wmodels " + suffix, "final result with systematic uncertainties with models" + suffix)
             setup_canvas(cfinalwsys_wmodels)
@@ -4292,16 +4266,16 @@ class AnalyzerJet(Analyzer):
                 input_pythia8_z[i_pythia8][ibin2].Draw("same")
             input_histograms_default[ibin2].Draw("AXISSAME")
 
-            latex = TLatex(0.1, 0.82, "ALICE Preliminary, pp, #sqrt{#it{s}} = 13 TeV")
+            latex = TLatex(0.15, 0.82, "ALICE Preliminary, pp, #sqrt{#it{s}} = 13 TeV")
             #latex = TLatex(0.15, 0.82, "pp, #sqrt{#it{s}} = 13 TeV")
             draw_latex(latex)
-            latex1 = TLatex(0.1, 0.77, "%s in charged jets, anti-#it{k}_{T}, #it{R} = 0.4" % self.p_latexnhadron)
+            latex1 = TLatex(0.15, 0.77, "%s in charged jets, anti-#it{k}_{T}, #it{R} = 0.4" % self.p_latexnhadron)
             draw_latex(latex1)
-            latex2 = TLatex(0.1, 0.72, "%g #leq %s < %g GeV/#it{c}, #left|#it{#eta}_{jet}#right| #leq 0.5" % (self.lvar2_binmin_reco[ibin2], self.p_latexbin2var, self.lvar2_binmax_reco[ibin2]))
+            latex2 = TLatex(0.15, 0.72, "%g #leq %s < %g GeV/#it{c}, #left|#it{#eta}_{jet}#right| #leq 0.5" % (self.lvar2_binmin_reco[ibin2], self.p_latexbin2var, self.lvar2_binmax_reco[ibin2]))
             draw_latex(latex2)
-            latex3 = TLatex(0.1, 0.66, "%g #leq #it{p}_{T, %s} < %g GeV/#it{c}, #left|#it{y}_{%s}#right| #leq 0.8" % (self.lpt_finbinmin[0], self.p_latexnhadron, min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]), self.p_latexnhadron))
+            latex3 = TLatex(0.15, 0.67, "%g #leq #it{p}_{T}^{%s} < %g GeV/#it{c}, #left|#it{y}_{%s}#right| #leq 0.8" % (self.lpt_finbinmin[0], self.p_latexnhadron, min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]), self.p_latexnhadron))
             draw_latex(latex3)
-            latex_SD = TLatex(0.1, 0.61, "Soft Drop (#it{z}_{cut} = 0.1, #it{#beta} = 0)")
+            latex_SD = TLatex(0.15, 0.62, "Soft Drop (#it{z}_{cut} = 0.1, #it{#beta} = 0)")
             draw_latex(latex_SD)
             leg_finalwsys_wmodels.Draw("same")
 
@@ -4326,33 +4300,41 @@ class AnalyzerJet(Analyzer):
             cfinalwsys_wmodels.SaveAs("%s/final_wsys_wmodels_%s.pdf" % (self.d_resultsallpdata, suffix))
 
             text_ptjet_full = self.text_ptjet % (self.lvar2_binmin_reco[ibin2], self.p_latexbin2var, self.lvar2_binmax_reco[ibin2])
-            text_pth_full = self.text_pth % (self.lpt_finbinmin[0], self.p_latexnhadron, min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]), self.p_latexnhadron)
-            text_pth_full_ratio = self.text_pth % (self.lpt_finbinmin[0], "HF", min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]), "HF")
+            text_pth_full = self.text_pth % (self.lpt_finbinmin[0], self.p_latexnhadron, min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]))
+            text_pth_full_ratio = self.text_pth % (self.lpt_finbinmin[0], "#Lambda_{c}^{+}, D^{0}", min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]))
 
-            list_obj = [tgsys[ibin2], tg_powheg[ibin2], input_histograms_default[ibin2], input_powheg_z[ibin2]]
-            labels_obj = ["data, pp, #sqrt{#it{s}} = 13 TeV", "POWHEG #plus PYTHIA 6", "", ""]
-            colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
-            markers = [get_marker(i, j) for i, j in zip((0, 1, 0, 1), (2, 0, 2, 0))]
-            #list_obj = [tgsys[ibin2], input_histograms_default[ibin2]]
-            #labels_obj = ["data, pp, #sqrt{#it{s}} = 13 TeV", ""]
-            #colours = [get_colour(i, j) for i, j in zip((0, 0), (2, 1))]
-            #markers = [get_marker(i, 2) for i in (0, 0)]
+            #list_obj = [tgsys[ibin2], tg_powheg[ibin2], input_histograms_default[ibin2], input_powheg_z[ibin2]]
+            #labels_obj = ["data, pp, #sqrt{#it{s}} = 13 TeV", "POWHEG #plus PYTHIA 6", "", ""]
+            #colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
+            #markers = [get_marker(i, j) for i, j in zip((0, 1, 0, 1), (2, 0, 2, 0))]
+            list_obj = [tgsys[ibin2], input_histograms_default[ibin2]]
+            labels_obj = ["data, pp, #sqrt{#it{s}} = 13 TeV", ""]
+            opt_plot= []
+            opt_plot.append("same")
+            opt_leg = []
+            opt_leg.append("LEP")
+            colours = [get_colour(i, j) for i, j in zip((0, 0), (2, 1))]
+            markers = [get_marker(i, 2) for i in (1, 1)]
             for i_pythia8 in range(len(self.pythia8_prompt_variations)):
                 list_obj.append(input_pythia8_z[i_pythia8][ibin2])
                 labels_obj.append(self.pythia8_prompt_variations_legend[i_pythia8])
-                colours.append(get_colour(i_pythia8 + 2))
-                markers.append(get_marker(i_pythia8 + 2))
+                colours.append(get_colour(i_pythia8 + 1))
+                input_pythia8_z[i_pythia8][ibin2].SetLineStyle(i_pythia8+6)
+                opt_leg.append("L")
+                opt_plot.append("samehist")
             cfinalwsys_wmodels_new, _ = make_plot("cfinalwsys_wmodels_new_" + suffix, \
-                list_obj=list_obj, labels_obj=labels_obj, opt_leg_g="FP", opt_plot_g="2", \
+                list_obj=list_obj, labels_obj=labels_obj, opt_leg_h = opt_leg, opt_leg_g="LEP" , opt_plot_h = opt_plot, opt_plot_g="2", \
                 colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[0.05, 0.4], \
-                title=";%s;(1/#it{N}_{jet}) d#it{N}/d%s" % (self.v_varshape_latex, self.v_varshape_latex))
+                title=";radial distance %s;(1/#it{N}_{jet}) d#it{N}/d%s" % (self.v_varshape_latex, self.v_varshape_latex))
+            for i_pythia8 in range(len(self.pythia8_prompt_variations)):
+                input_pythia8_z[i_pythia8][ibin2].SetLineWidth(5)
             for gr, c in zip((tgsys[ibin2], tg_powheg[ibin2]), (0, 1)):
                 gr.SetMarkerColor(get_colour(c))
             if self.typean == "jet_rg":
                 cfinalwsys_wmodels_new.SetTickx(0)
                 axis_thetag.Draw("same")
             # Draw LaTeX
-            y_latex = 0.83
+            y_latex = 0.834
             list_text = [self.text_alice, self.text_jets, text_ptjet_full, text_pth_full]
             if self.shape in ("zg", "rg", "nsd"):
                 list_text.append(self.text_sd)
@@ -4360,28 +4342,38 @@ class AnalyzerJet(Analyzer):
             for text_latex in list_text:
                 latex = TLatex(self.x_latex, y_latex, text_latex)
                 list_latex.append(latex)
-                draw_latex(latex, textsize=0.033)
+                draw_latex(latex, textsize=0.04)
                 y_latex -= self.y_step
             cfinalwsys_wmodels_new.SaveAs("%s/final_wsys_wmodels_%s_new.pdf" % (self.d_resultsallpdata, suffix))
 
             if self.lc_d0_ratio:
-                list_obj = [rel_sys[ibin2], powheg_ratio_sys[ibin2], histo_ratios[ibin2], powheg_ratio[ibin2]]
-                labels_obj = ["data, pp, #sqrt{#it{s}} = 13 TeV", "POWHEG #plus PYTHIA 6", "", ""]
-                colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
-                markers = [get_marker(i, j) for i, j in zip((0, 1, 0, 1), (2, 0, 2, 0))]
-                #list_obj = [rel_sys[ibin2], histo_ratios[ibin2]]
-                #labels_obj = ["data, pp, #sqrt{#it{s}} = 13 TeV",  ""]
-                #colours = [get_colour(i, j) for i, j in zip((0, 0), (2, 1))]
-                #markers = [get_marker(i, 2) for i in (0, 0)]
+                #list_obj = [rel_sys[ibin2], powheg_ratio_sys[ibin2], histo_ratios[ibin2], powheg_ratio[ibin2]]
+                #labels_obj = ["data, pp, #sqrt{#it{s}} = 13 TeV", "POWHEG #plus PYTHIA 6", "", ""]
+                #colours = [get_colour(i, j) for i, j in zip((0, 1, 0, 1), (2, 2, 1, 1))]
+                #markers = [get_marker(i, j) for i, j in zip((0, 1, 0, 1), (2, 0, 2, 0))]
+                list_obj = [rel_sys[ibin2], histo_ratios[ibin2]]
+                labels_obj = ["data, pp, #sqrt{#it{s}} = 13 TeV",""]
+                colours = [get_colour(i, j) for i, j in zip((0, 0), (2, 1))]
+                opt_leg = []
+                opt_plot= []
+                opt_plot.append("same")
+                opt_leg.append("LEP")
+                opt_plot
+                markers = [get_marker(i, 2) for i in (1, 1)]
                 for i_pythia8 in range(len(self.pythia8_prompt_variations)):
                     list_obj.append(input_pythia8_ratio[i_pythia8][ibin2])
                     labels_obj.append(self.pythia8_prompt_variations_legend[i_pythia8])
-                    colours.append(get_colour(i_pythia8 + 2))
-                    markers.append(get_marker(i_pythia8 + 2))
+                    colours.append(get_colour(i_pythia8 + 1))
+                    input_pythia8_ratio[i_pythia8][ibin2].SetLineStyle(i_pythia8 + 6)
+                    opt_leg.append("L")
+                    opt_plot.append("samehist")
+                    #markers.append(get_marker(i_pythia8 + 2))
                 cfinalratio_wmodels_new, _ = make_plot("cfinalratio_wmodels_new_" + suffix, \
-                    list_obj=list_obj, labels_obj=labels_obj, opt_leg_g="FP", opt_plot_g="2", \
+                    list_obj=list_obj, labels_obj=labels_obj, opt_leg_h = opt_leg, opt_leg_g="L", opt_plot_h = opt_plot, opt_plot_g="2", \
                     colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[0.05, 0.4], \
-                    title=";%s; #Lambda_{c}^{+}/D^{0}: ratio of (1/#it{N}_{jet}) d#it{N}/d%s" % (self.v_varshape_latex,self.v_varshape_latex))
+                    title=";radial distance %s; #Lambda_{c}^{+}/D^{0} ratio of (1/#it{N}_{jet}) d#it{N}/d%s" % (self.v_varshape_latex,self.v_varshape_latex))
+                for i_pythia8 in range(len(self.pythia8_prompt_variations)):
+                    input_pythia8_ratio[i_pythia8][ibin2].SetLineWidth(5)
                 for gr, c in zip((rel_sys[ibin2], powheg_ratio_sys[ibin2]), (0, 1)):
                     gr.SetMarkerColor(get_colour(c))
                 if self.typean == "jet_rg":
@@ -4396,7 +4388,7 @@ class AnalyzerJet(Analyzer):
                 for text_latex in list_text:
                     latex = TLatex(self.x_latex, y_latex, text_latex)
                     list_latex.append(latex)
-                    draw_latex(latex, textsize=0.033)
+                    draw_latex(latex, textsize=0.04)
                     y_latex -= self.y_step
                 cfinalratio_wmodels_new.SaveAs("%s/final_wsys_ratio_wmodels_%s_new.pdf" % (self.d_resultsallpdata, suffix))
 
@@ -4539,7 +4531,7 @@ class AnalyzerJet(Analyzer):
             cfeeddown_fraction.SaveAs("%s/feeddown_fraction_var_%s.pdf" % (self.d_resultsallpdata, suffix_plot))
 
             text_ptjet_full = self.text_ptjet % (self.lvar2_binmin_reco[ibin2], self.p_latexbin2var, self.lvar2_binmax_reco[ibin2])
-            text_pth_full = self.text_pth % (self.lpt_finbinmin[0], self.p_latexnhadron, min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]), self.p_latexnhadron)
+            text_pth_full = self.text_pth % (self.lpt_finbinmin[0], self.p_latexnhadron, min(self.lpt_finbinmax[-1], self.lvar2_binmax_reco[ibin2]))
 
             # preliminary figure
             if ibin2 == 1:
