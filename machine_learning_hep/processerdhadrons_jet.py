@@ -227,8 +227,7 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
 
         # efficiency corrections for the response matrix
         self.d_resultsallpmc = datap["analysis"][typean]["mc"]["resultsallp"]
-        self.doeff_resp = datap["analysis"][self.typean]["doeff_resp"]
-        print("EFFICIENCY RESP:", self.doeff_resp)
+        self.doeff_resp = datap["analysis"][self.typean].get("doeff_resp", False)
         self.file_efficiency = os.path.join(self.d_resultsallpmc, "efficiencies.root")
 
         self.p_usejetptbinned_deff = \
@@ -632,32 +631,30 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
 
         return df_tmp_selgen, df_tmp_selreco, df_tmp_selrecogen
 
-    def effcorr_response(self, df_noeffcorr):
+    def effcorr_response(self, df_noeffcorr): #this function is used to provide weights for efficiency corrrections
         eff_file = TFile.Open(self.file_efficiency)
-        print(self.file_efficiency)
         if self.p_usejetptbinned_deff is True:
             bin_range = self.p_nbin2_reco
         else:
             bin_range = 1
-        df_effcorr = []
+        #add efficiency and weight columns to the df
+        df_noeffcorr['eff'] = 1
+        df_noeffcorr['weight'] = 1
         # loop over pt_jet bins (efficiency is the same for all pt_jet,
         # but histos have pt_jet interval in the title)
         for ibin2 in range(bin_range):
             heff_pr = eff_file.Get("eff_mult%d" % ibin2)
             for ipt in range(self.p_nptfinbins):
                 eff = heff_pr.GetBinContent(ipt+1)
-                # limit the prompt(nonprompt) df with current bin ranges and
-                # assign corresponding efficiency to each bin as a new df column
-                df_tmp = seldf_singlevar(df_noeffcorr, "pt_cand", \
-                        self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt])
-                df_tmp['eff'] = eff
                 if eff > 0:
-                    df_tmp['weight'] = 1/eff
+                    weight = 1/eff
                 else:
-                    df_tmp['weight'] = 0
-                df_effcorr.append(df_tmp)
-        df_effcorr = pd.concat(df_effcorr)
-        return df_effcorr
+                    weight = 0
+                # assign corresponding efficiency to each pt bin
+                df_noeffcorr.loc[(df_noeffcorr['pt_cand'] >= self.lpt_finbinmin[ipt]) & (df_noeffcorr['pt_cand'] < self.lpt_finbinmax[ipt]), 'eff'] = eff
+                df_noeffcorr.loc[(df_noeffcorr['pt_cand'] >= self.lpt_finbinmin[ipt]) & (df_noeffcorr['pt_cand'] < self.lpt_finbinmax[ipt]), 'weight'] = weight
+#
+        return df_noeffcorr
 
     def process_response(self):
         print("Doing response", self.mcordata, self.period)
@@ -791,9 +788,9 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
         print("before sample")
         #sample_closure_unmatched=df_zvsjetpt_gen_unmatched.sample(frac=0.20)
         _, sample_closure_unmatched = \
-                 train_test_split(df_zvsjetpt_gen_unmatched, test_size=0.2)
-        hz_closure_unmatched = makefill2dhist(sample_closure_unmatched,
-                "sample_closure", self.varshapebinarray_gen,
+                 train_test_split(df_zvsjetpt_gen_unmatched, test_size=self.closure_frac)
+        hz_closure_unmatched = makefill2dhist(sample_closure_unmatched, \
+                "sample_closure", self.varshapebinarray_gen, \
                 self.var2binarray_gen ,self.v_varshape_binning, "pt_jet")
         hz_closure_unmatched.Write()
 
@@ -1332,8 +1329,6 @@ class ProcesserDhadrons_jet(Processer): # pylint: disable=invalid-name, too-many
                 response_matrix_weight = 1.0/weight
             response_matrix_closure_pr.Fill(getattr(row, self.v_varshape_binning), row.pt_jet,\
                 getattr(row, self.v_varshape_binning_gen), row.pt_gen_jet, response_matrix_weight)
-            #response_matrix_closure_pr.Fill(getattr(row, self.v_varshape_binning), row.pt_jet,\
-            #    getattr(row, self.v_varshape_binning_gen), row.pt_gen_jet)
         out_file.cd()
         response_matrix_pr.Write("response_matrix")
         response_matrix_closure_pr.Write("response_matrix_closure")
