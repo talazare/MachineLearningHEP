@@ -579,11 +579,17 @@ def get_y_window_his(l_his: list, with_errors=True):
 
 def get_colour(i: int, scheme=1):
     '''Return a colour from the list.'''
-    colours = [kBlack, kBlue, kRed, kGreen + 1, kOrange + 1, kMagenta, kCyan + 1, kGray + 1, \
+    #colours = [kRed+1, kBlue, kGreen+3, kGreen - 10, kOrange + 1, kMagenta, kCyan + 1, kGray + 1, \
+    #    kBlue + 2, kRed - 3, kGreen + 3, kYellow  + 1, kMagenta + 1, kCyan + 2, kRed + 3]
+    #colours_alice_point = [kRed+1, kBlue + 1, kGreen + 3, kGreen + 3, kMagenta + 2, kOrange + 4, \
+    #    kCyan + 2, kYellow + 2]
+    #colours_alice_syst = [kRed - 10, kBlue - 7, kGreen - 7, kGreen - 6, kMagenta - 4, kOrange - 3, \
+    #    kCyan - 6, kYellow - 7]
+    colours = [kBlack, 2, 4, kGreen - 10, kOrange + 1, kMagenta, kCyan + 1, kGray + 1, \
         kBlue + 2, kRed - 3, kGreen + 3, kYellow  + 1, kMagenta + 1, kCyan + 2, kRed + 3]
-    colours_alice_point = [kBlack, kBlue + 1, kRed + 1, kGreen + 3, kMagenta + 2, kOrange + 4, \
+    colours_alice_point = [kBlack, 2, 4, kGreen + 3, kMagenta + 2, kOrange + 4, \
         kCyan + 2, kYellow + 2]
-    colours_alice_syst = [17, kBlue - 7, kRed - 7, kGreen - 6, kMagenta - 4, kOrange - 3, \
+    colours_alice_syst = [17, 2, 4, 0, kMagenta - 4, kOrange - 3, \
         kCyan - 6, kYellow - 7]
     if scheme == 1:
         list_col = colours_alice_point
@@ -646,14 +652,15 @@ def setup_canvas(can):
     can.SetRightMargin(0.05)
     can.cd()
 
-def setup_legend(legend, textsize=0.035):
+def setup_legend(legend,
+        textsize=0.035):
     legend.SetBorderSize(0)
     legend.SetFillColor(0)
     legend.SetFillStyle(0)
     legend.SetTextSize(textsize)
     legend.SetTextFont(42)
 
-def setup_tgraph(tg_, colour=1, markerstyle=kOpenCircle, size=1.5, alphastyle=0.8,
+def setup_tgraph(tg_, colour=1, markerstyle=kOpenCircle, size=2, alphastyle=0.8,
                  fillstyle=1001, textsize=0.05):
     tg_.GetXaxis().SetTitleSize(textsize)
     tg_.GetXaxis().SetTitleOffset(1.0)
@@ -676,7 +683,7 @@ def draw_latex(latex, colour=1, textsize=0.03):
 
 def make_plot(name, path=None, suffix="eps", title="", size=None, margins_c=None, # pylint: disable=too-many-arguments, too-many-branches, too-many-statements, too-many-locals
               list_obj=None, labels_obj=None,
-              leg_pos=None, opt_leg_h="P", opt_leg_g="P", opt_plot_h="same", opt_plot_g="P0",
+              leg_pos=None, opt_leg_h="LEP", opt_leg_g="LEP", opt_plot_h="", opt_plot_g="P0",
               offsets_xy=None, maxdigits=3, colours=None, markers=None, sizes=None,
               range_x=None, range_y=None, margins_y=None, with_errors="xy", logscale=None):
     """
@@ -747,12 +754,12 @@ def make_plot(name, path=None, suffix="eps", title="", size=None, margins_c=None
         graph.GetYaxis().SetRangeUser(y_min_plot, y_max_plot)
         graph.GetXaxis().SetMaxDigits(maxdigits)
         graph.GetYaxis().SetMaxDigits(maxdigits)
-        graph.GetYaxis().SetTitleOffset(1.2)
         if offsets_xy:
             graph.GetXaxis().SetTitleOffset(offsets_xy[0])
             graph.GetYaxis().SetTitleOffset(offsets_xy[1])
         if leg and n_labels > counter_plot and len(labels_obj[counter_plot]) > 0:
-            leg.AddEntry(list_obj[counter_plot], labels_obj[counter_plot], "P")
+            leg.AddEntry(list_obj[counter_plot], labels_obj[counter_plot],
+                    "LEP")
         graph.Draw(opt_plot_g + "A" if counter_plot == 0 else opt_plot_g)
 
     def plot_histogram(histogram):
@@ -760,7 +767,7 @@ def make_plot(name, path=None, suffix="eps", title="", size=None, margins_c=None
         if counter_plot == 0:
             gr = TGraph(histogram)
             setup_tgraph(gr)
-            gr.SetMarkerSize(0)
+            gr.SetMarkerSize(2)
             gr.SetTitle(title)
             gr.GetXaxis().SetLimits(x_min_plot, x_max_plot)
             gr.GetYaxis().SetRangeUser(y_min_plot, y_max_plot)
@@ -768,7 +775,6 @@ def make_plot(name, path=None, suffix="eps", title="", size=None, margins_c=None
             gr.GetXaxis().SetLabelSize(0.045)
             gr.GetYaxis().SetLabelSize(0.045)
             gr.GetYaxis().SetMaxDigits(maxdigits)
-            gr.GetYaxis().SetTitleOffset(1.2)
             if offsets_xy:
                 gr.GetXaxis().SetTitleOffset(offsets_xy[0])
                 gr.GetYaxis().SetTitleOffset(offsets_xy[1])
@@ -778,12 +784,13 @@ def make_plot(name, path=None, suffix="eps", title="", size=None, margins_c=None
         setup_histogram(histogram, get_my_colour(counter_plot), get_my_marker(counter_plot),
                         get_my_size(counter_plot))
         if leg and n_labels > counter_plot and len(labels_obj[counter_plot]) > 0:
-            leg.AddEntry(histogram, labels_obj[counter_plot], opt_leg_h[counter_plot-1])
-        print(opt_plot_h)
-        if isinstance(opt_plot_h, str):
+            leg.AddEntry(histogram, labels_obj[counter_plot],
+                    opt_leg_h[counter_plot])
+        if counter_plot == 1:
             histogram.Draw("same")
         else:
-            histogram.Draw(opt_plot_h[counter_plot-1])
+            histogram.Draw("same hist")
+
     def plot_latex(latex):
         draw_latex(latex)
 

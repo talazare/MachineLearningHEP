@@ -154,9 +154,9 @@ D0pp:
       fracmerge: [0.08,0.08,0.08] #list of periods
       seedmerge: [12,12,12] #list of periods
       period: [LHC16pp,LHC17pp,LHC18pp] #list of periods
-      select_children: [["child_1", "child_2","child_3", "child_4","child_5","child_6","child_7","child_8","child_9","child_10"],
-                        ["child_11", "child_12","child_13", "child_14","child_15","child_16","child_17","child_18","child_19","child_20", "child_21"], 
-                        ["child_22","child_23", "child_24","child_25", "child_26","child_27","child_28","child_29","child_30","child_31","child_32", "child_33", "child_34", "child_35"]] # select children explicitly corresponding to each year
+      select_children: [["child_1", "child_2", "child_3", "child_4", "child_5", "child_6", "child_7", "child_8", "child_9", "child_10"],
+                        ["child_12", "child_13", "child_14", "child_15", "child_16", "child_17", "child_18", "child_19", "child_20", "child_21"],
+                        ["child_22", "child_23", "child_24", "child_25", "child_26", "child_27", "child_28", "child_29", "child_30", "child_31", "child_32", "child_33", "child_34", "child_35"]] # select children explicitly corresponding to each year
       unmerged_tree_dir: [/data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged,
                           /data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged,
                           /data/TTree/D0DsLckINT7HighMultCalo_withJets/vAN-20210223_ROOT6-1/pp_data/593_20210223-2051/merged] #list of periods
@@ -282,7 +282,7 @@ D0pp:
       useperiod: [1,1,1] #list of periods
       usejetptbinned_deff: false
       lc_d0_ratio: true
-      compare_with_inclusive: false 
+      compare_with_inclusive: false
       latexnamehadron: "D^{0}"
       latexnamedecay: "K^{#minus} #pi^{#plus}"
       use_inclusive_systematics: true
@@ -352,7 +352,7 @@ D0pp:
 
       SetFixGaussianSigma: [false, false, false, false]
       SetInitialGaussianSigma: [false, false, false, false]
- 
+
       fix_sigmasec: [true, true, true, true] # sel_an_binmin bins
       sigmaarraysec: [0.01, 0.01, 0.01, 0.01] # sel_an_binmin bins
       # simple fitter END
@@ -366,7 +366,7 @@ D0pp:
       sidebandleftonly: false
 
       niterunfolding: 15
-      niterunfoldingchosen: 4 
+      niterunfoldingchosen: 4
 
       branching_ratio: 3.95e-2
       xsection_inel: 57.8 # (mb) cross-section of minimum-bias events
@@ -381,10 +381,10 @@ D0pp:
       powheg_prompt_variations: ["F1_R05","F05_R1","F2_R1","F1_R2","F2_R2","F05_R05","Mhigh","Mlow"]
 
       pythia8_prompt_variations_path: /data/PYTHIA8/trees_pythia8_pr_
-      pythia8_prompt_variations: ["default","colour2soft","colour2soft"]
-      pythia8_prompt_variations_legend:  ["PYTHIA 8 (Monash)","PYTHIA 8 SoftQCD, mode 2", "SoftQCD, mode 2 (scaled)"]
-      #pythia8_prompt_variations: ["default","colour2soft"]
-      #pythia8_prompt_variations_legend:  ["PYTHIA 8 (Monash)","PYTHIA 8 SoftQCD, mode 2"]
+      #pythia8_prompt_variations: ["default","colour2soft","colour2soft"]
+      #pythia8_prompt_variations_legend:  ["PYTHIA 8 (Monash)","PYTHIA 8 SoftQCD, mode 2", "SoftQCD, mode 2 (scaled)"]
+      pythia8_prompt_variations: ["default","colour2soft"]
+      pythia8_prompt_variations_legend:  ["PYTHIA 8 (Monash)","PYTHIA 8 SoftQCD, mode 2"]
 
       variations_db: ./data/data_prod_20200824/database_variations_D0pp_jet_zg.yml
 

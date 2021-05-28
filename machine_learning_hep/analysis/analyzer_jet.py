@@ -31,7 +31,7 @@ from ROOT import TLegend
 from ROOT import gROOT, gStyle
 from ROOT import RooUnfoldBayes
 # HF specific imports
-from machine_learning_hep.utilities import folding, folding_roounfold, equal_binning_lists, make_message_notfound
+from machine_learning_hep.utilities import folding, equal_binning_lists, make_message_notfound
 from machine_learning_hep.analysis.analyzer import Analyzer
 from machine_learning_hep.utilities import setup_histogram, setup_canvas, get_colour, get_marker, get_y_window_gr, get_y_window_his, get_plot_range
 from machine_learning_hep.utilities import setup_legend, setup_tgraph, draw_latex, tg_sys, make_plot
@@ -235,8 +235,8 @@ class AnalyzerJet(Analyzer):
             self.systematic_rms_both_sides[c] = db_sys[catname]["rms_both_sides"]
         self.inclusive_unc = datap["analysis"][self.typean].get("inclusive_unc", None)
         self.use_inclusive_systematics = datap["analysis"][self.typean].get("use_inclusive_systematics", False)
-	self.do_check_signif = datap["analysis"][self.typean].get("signif_check", False)
-	self.signif_threshold = datap["analysis"][self.typean].get("signif_thresh", 3)
+        self.do_check_signif = datap["analysis"][self.typean].get("signif_check", False)
+        self.signif_threshold = datap["analysis"][self.typean].get("signif_thresh", 3)
 
         # output directories
         self.d_resultsallpmc = datap["analysis"][typean]["mc"]["results"][period] \
@@ -479,8 +479,7 @@ class AnalyzerJet(Analyzer):
                     sgn_func.SetLineColor(get_colour(2))
                     sgn_func.Draw("same")
                     bkg_func.Draw("same")
-                if (np.isnan(bkg) == False and np.isnan(sig) == False and np.isnan(s_to_b) == False):
-                    print( bkg, sig, s_to_b)
+                if (not np.isnan(bkg) and not np.isnan(sig) and not np.isnan(s_to_b)):
                     latex3 = TLatex(0.67, 0.78, "mean = %s, #sigma  = %s" % \
                             (round(mean, 2), round(sigma, 2)))
                     draw_latex(latex3)
@@ -534,7 +533,6 @@ class AnalyzerJet(Analyzer):
             list_his.append(h_sel_pr)
             h_eff_pr_old = h_sel_pr.Clone("h_eff_pr" + stringbin2 + "_old")
             list_ptcand_eff_old.append(h_eff_pr_old)
-        effhist_part_pr = list_his[0].Clone("effhist_part_pr")
         y_min_h, y_max_h = get_y_window_his(list_his)
         y_min_h = 0
         y_margin_up = 0.35
@@ -574,7 +572,6 @@ class AnalyzerJet(Analyzer):
             h_sel_fd = lfileeff.Get("h_sel_fd" + stringbin2)
             h_sel_fd.Divide(h_sel_fd, h_gen_fd, 1.0, 1.0, "B")
             list_his.append(h_sel_fd)
-        effhist_part_fd = list_his[0].Clone("effhist_part_fd")
         y_min_h, y_max_h = get_y_window_his(list_his)
         y_min_h = 0
         y_margin_up = 0.35
@@ -1522,9 +1519,9 @@ class AnalyzerJet(Analyzer):
         # input_data is 3d histogram from powheg+pythia prediction that
         # contains z vs jet_pt vs HF pt.
         if self.xsec:
-           input_data = self.get_simulated_yields(self.powheg_path_nonprompt, 3, False, True)
+            input_data = self.get_simulated_yields(self.powheg_path_nonprompt, 3, False, True)
         else:
-           input_data = self.get_simulated_yields(self.powheg_path_nonprompt, 3, False)
+            input_data = self.get_simulated_yields(self.powheg_path_nonprompt, 3, False)
         if not input_data:
             self.logger.fatal(make_message_notfound("simulated yields", self.powheg_path_nonprompt))
         input_data.SetName("fh3_feeddown_%s" % self.v_varshape_binning)
@@ -1749,7 +1746,7 @@ class AnalyzerJet(Analyzer):
             y_min_h = 0
             y_margin_up = 0.05
             y_margin_down = 0
-            bin_pt_max = min(self.p_nptfinbins, heff_pr_list[ibin2].GetXaxis().FindBin(self.lvar2_binmax_gen[ibin2] - 0.01))
+            #bin_pt_max = min(self.p_nptfinbins, heff_pr_list[ibin2].GetXaxis().FindBin(self.lvar2_binmax_gen[ibin2] - 0.01))
             heff_pr_list[ibin2].GetYaxis().SetRangeUser(*get_plot_range(y_min_h, y_max_h, y_margin_down, y_margin_up))
             heff_pr_list[ibin2].GetXaxis().SetRange(1, self.p_nptfinbins)
             heff_pr_list[ibin2].SetTitle("")
@@ -1787,7 +1784,7 @@ class AnalyzerJet(Analyzer):
                 y_margin_up = 0.3
                 y_margin_down = 0.05
                 c_eff_both, list_obj_new = make_plot("c_eff_both_" + suffix, size=self.size_can, \
-                    list_obj=list_obj, labels_obj=labels_obj, opt_leg_g=self.opt_leg_g, opt_plot_g=self.opt_plot_g, offsets_xy=[1, 1.1], \
+                    list_obj=list_obj, labels_obj=labels_obj, opt_leg_g=self.opt_leg_g, opt_plot_g=self.opt_plot_g, offsets_xy=[1, 1.3], \
                     colours=colours, markers=markers, leg_pos=leg_pos, margins_y=[y_margin_down, y_margin_up], margins_c=[0.12, 0.13, 0.05, 0.03], \
                     title=";#it{p}_{T}^{%s} (GeV/#it{c});reconstruction efficiency" % self.p_latexnhadron)
                 list_obj_new[0].SetTextSize(self.fontsize)
@@ -2881,7 +2878,7 @@ class AnalyzerJet(Analyzer):
             # compare the result before unfolding and after
 
             input_data_z_scaled = input_data_z[ibin2].Clone("input_data_z_scaled_%s" % suffix)
-            if (input_data_z_scaled.Integral(bin_int_first, -1) == 0):
+            if input_data_z_scaled.Integral(bin_int_first, -1) == 0:
                 print("WARNING!!! No unfolded output for ", suffix)
                 continue
             input_data_z_scaled.Scale(1.0 / input_data_z_scaled.Integral(bin_int_first, -1), "width")
@@ -3009,7 +3006,7 @@ class AnalyzerJet(Analyzer):
         hzvsjetpt_reco_eff.Divide(hzvsjetpt_reco_nocuts)
         input_mc_det = unfolding_input_file.Get("input_closure_reco")
         input_mc_det.Multiply(hzvsjetpt_reco_eff)
-	# use unmatched gen sample for closure
+    # use unmatched gen sample for closure
         input_mc_gen = unfolding_input_file.Get("sample_closure")
         #input_mc_gen = unfolding_input_file.Get("input_closure_gen")
         kinematic_eff = []
@@ -3268,7 +3265,7 @@ class AnalyzerJet(Analyzer):
                         tg_error = tg_powheg[ibin2].GetErrorY(ibinshape)/input_powheg_z[ibin2].GetBinContent(ibinshape+1)
                     else:
                         tg_error_lc = 0
-                        tg_error
+                        tg_error = 0
                     abs_err = sqrt(tg_error_lc*tg_error_lc + tg_error*tg_error)*input_powheg_ratio.GetBinContent(ibinshape+1)
                     shapebins_error.append(abs_err*0.5)
                     shapebins_contents.append(input_powheg_ratio.GetBinContent(ibinshape+1))
@@ -3296,7 +3293,6 @@ class AnalyzerJet(Analyzer):
         for ibin2 in range(self.p_nbin2_gen):
             suffix = "%s_%.2f_%.2f" % (self.v_var2_binning, self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2])
             name_his = "unfolded_z_sel_%s" % suffix
-            name_lc= "unfolded_z_scaled_4_%s" % suffix
             name_eff = "eff_mult%d" % ibin2
             input_histograms_default.append(input_file_default.Get(name_his))
             if self.lc_d0_ratio:
@@ -3336,7 +3332,7 @@ class AnalyzerJet(Analyzer):
 
         input_histograms_sys = []
         input_histograms_sys_eff = []
-        for ibin2 in range(self.p_nbin2_gen):
+        for ibin2 in range(self.p_nbin2_gen): #pylint: disable=:too-many-nested-blocks
             suffix = "%s_%.2f_%.2f" % (self.v_var2_binning, self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2])
             name_his = "unfolded_z_sel_%s" % suffix
             name_eff = "eff_mult%d" % ibin2
@@ -3354,7 +3350,6 @@ class AnalyzerJet(Analyzer):
                              self.v_var_binning, self.lpt_finbinmin[ipt], self.lpt_finbinmax[ipt])
                         name_signif = "signif_%s" % suffix_plot
                         histo_signif = input_files_signif[sys_cat][sys_var].Get(name_signif)
-                        path_signif = path_hm.replace(string_default, string_catvar)
                         if not histo_signif:
                             print("WARNING! No significance histo found! Skipping check")
                             continue
@@ -3371,7 +3366,7 @@ class AnalyzerJet(Analyzer):
                     name_his = name_his_orig
                     path_file = path_def.replace(string_default, string_catvar)
                     path_eff_file = path_eff.replace(string_default, string_catvar)
-                    if signif_check == False:
+                    if not signif_check:
                         print("BAD FIT in Variation: %s, %s" % (self.systematic_catnames[sys_cat], self.systematic_varnames[sys_cat][sys_var]))
                         for idr in range(len(self.lvarshape_binmin_gen)):
                             sys_var_histo.SetBinContent(idr+1, 0)
@@ -3559,7 +3554,7 @@ class AnalyzerJet(Analyzer):
                     def_array.append(def_bin)
                     for sys_var in range(self.systematic_variations[sys_cat]):
                         sys_bin = input_histograms_sys[ibin2][sys_cat][sys_var].GetBinContent(r_val+1)
-                        if (sys_bin!=0):
+                        if sys_bin!=0:
                             sys_bin = sys_bin/def_bin
                         sys_array.append(sys_bin)
                         var_histo.SetBinContent(sys_var+1, sys_bin)
@@ -3601,8 +3596,8 @@ class AnalyzerJet(Analyzer):
                         setup_histogram(histo_ratio[sys_var], get_colour(nsys + 1), get_marker(nsys + 1))
                         histo_ratio[sys_var].Draw("same")
                     else:
-                       histo_ratio[sys_var].Reset()
-                       setup_histogram(histo_ratio[sys_var], 0, get_marker(nsys + 1))
+                        histo_ratio[sys_var].Reset()
+                        setup_histogram(histo_ratio[sys_var], 0, get_marker(nsys + 1))
                     nsys = nsys + 1
                 line = TLine(self.lvarshape_binmin_reco[0], 1, self.lvarshape_binmax_reco[-1], 1)
                 line.SetLineColor(1)
@@ -3654,13 +3649,13 @@ class AnalyzerJet(Analyzer):
                                 error = unc*default
                             else:
                                 # FIXME exception for the untagged bin pylint: disable=fixme
-                                if input_histograms_sys[ibin2][sys_cat][sys_var].Integral()=0:
+                                if input_histograms_sys[ibin2][sys_cat][sys_var].Integral()==0:
                                     error = 0
                                 else:
                                     error = input_histograms_sys[ibin2][sys_cat][sys_var].GetBinContent(ibinshape + bin_first) - input_histograms_default[ibin2].GetBinContent(ibinshape + 1)
                         else:
                             # FIXME exception for the untagged bin pylint: disable=fixme
-                            if input_histograms_sys[ibin2][sys_cat][sys_var].Integral()=0:
+                            if input_histograms_sys[ibin2][sys_cat][sys_var].Integral()==0:
                                 error = 0
                             else:
                                 error = input_histograms_sys[ibin2][sys_cat][sys_var].GetBinContent(ibinshape + bin_first) - input_histograms_default[ibin2].GetBinContent(ibinshape + 1)
@@ -3774,7 +3769,7 @@ class AnalyzerJet(Analyzer):
                 shapebins_error_down_cat = []
                 for ibinshape in range(self.p_nbinshape_gen):
                     shapebins_contents_cat.append(0)
-                    if (input_histograms_default[ibin2].GetBinContent(ibinshape + 1) == 0):
+                    if input_histograms_default[ibin2].GetBinContent(ibinshape + 1) == 0:
                         print ("WARNING!!! Input histogram at bin", ibin2, " equal 0, skip", suffix)
                         continue
                     shapebins_error_up_cat.append(sys_up[ibin2][ibinshape][sys_cat]/input_histograms_default[ibin2].GetBinContent(ibinshape + 1))
@@ -3809,8 +3804,6 @@ class AnalyzerJet(Analyzer):
             unc_hist_down.Write()
             if self.lc_d0_ratio:
                 histo_ratio = lc_input_histo[ibin2].Clone("histo_ratio")
-                for ibinshape in range(self.p_nbinshape_gen):
-                    print(lc_input_histo[ibin2].GetBinContent(ibinshape+1), input_histograms_default[ibin2].GetBinContent(ibinshape+1))
                 histo_ratio.Divide(input_histograms_default[ibin2])
                 lc_unc_hist_up = input_file_lc.Get("unc_hist_up%s" % suffix)
                 lc_unc_hist_down = input_file_lc.Get("unc_hist_down%s" % suffix)
@@ -3865,7 +3858,7 @@ class AnalyzerJet(Analyzer):
             suffix = "%s_%.2f_%.2f" % (self.v_var2_binning, self.lvar2_binmin_gen[ibin2], self.lvar2_binmax_gen[ibin2])
             h_default_stat_err.append(input_histograms_default[ibin2].Clone("h_default_stat_err" + suffix))
             for i in range(h_default_stat_err[ibin2].GetNbinsX()):
-                if (input_histograms_default[ibin2].GetBinContent(ibinshape + 1) == 0):
+                if input_histograms_default[ibin2].GetBinContent(ibinshape + 1) == 0:
                     print ("WARNING!!! Input histogram at bin", ibin2, " equal 0, skip", suffix)
                     h_default_stat_err[ibin2].SetBinContent(i + 1, 0)
                     h_default_stat_err[ibin2].SetBinError(i + 1, 0)
@@ -3889,11 +3882,9 @@ class AnalyzerJet(Analyzer):
             path = "%s%s.root" % (self.pythia8_prompt_variations_path, self.pythia8_prompt_variations[i_pythia8])
             print(path)
             if "default" in path:
-                print("catch monash")
                 path_monash = path
             elif "2soft" in path:
                 path_mode2 = path
-                print("catch mode2")
         for i_pythia8 in range(len(self.pythia8_prompt_variations)):
             path = "%s%s.root" % (self.pythia8_prompt_variations_path, self.pythia8_prompt_variations[i_pythia8])
             if "scaled" in self.pythia8_prompt_variations_legend[i_pythia8]:
@@ -3927,13 +3918,12 @@ class AnalyzerJet(Analyzer):
                 input_pythia8_z_jetpt[ibin2].Scale(1.0 / input_pythia8_z_jetpt[ibin2].Integral(), "width")
                 pythia8_out = input_pythia8_z_jetpt[ibin2]
                 if "scaled" in self.pythia8_prompt_variations_legend[i_pythia8]:
-                     name = pythia8_out.GetName()+"scaled"
-                     pythia8_out.SetName(name)
+                    name = pythia8_out.GetName()+"scaled"
+                    pythia8_out.SetName(name)
                 file_sim_out.cd()
                 pythia8_out.Write()
                 if self.lc_d0_ratio:
                     name_pythia = input_pythia8_z_jetpt[ibin2].GetName()
-                    print("~~~~~~~~~~~~~~~~", name_pythia, "~~~~~~~~~~~~~~~~~~~~")
                     pythia_lc = file_sim_lc.Get(name_pythia)
                     pythia_ratio=pythia_lc.Clone("pythia_ratio")
                     pythia_ratio.Divide(input_pythia8_z_jetpt[ibin2])
@@ -3969,9 +3959,6 @@ class AnalyzerJet(Analyzer):
             input_histograms_default[ibin2].SetXTitle(self.v_varshape_latex)
             input_histograms_default[ibin2].SetYTitle("1/#it{N}_{jets} d#it{N}/d%s" % self.v_varshape_latex)
             input_histograms_default[ibin2].Draw("")
-            for ibinshape in range(self.p_nbinshape_gen):
-                    if input_histograms_default[ibin2].GetBinContent(ibinshape+1)!=0:
-                        print("***", ibin2, ibinshape, tgsys[ibin2].GetErrorY(ibinshape)/input_histograms_default[ibin2].GetBinContent(ibinshape+1))
             setup_tgraph(tgsys[ibin2], get_colour(7, 0))
             tgsys[ibin2].Draw("5")
             leg_finalwsys.AddEntry(tgsys[ibin2], "syst. unc.", "F")
@@ -4184,9 +4171,6 @@ class AnalyzerJet(Analyzer):
             h_default_stat_err[ibin2].SetMarkerSize(0)
             leg_relativesys.AddEntry(h_default_stat_err[ibin2], "stat. unc.", "E")
             for sys_cat in range(self.n_sys_cat):
-                if "cut" in self.systematic_catnames[sys_cat]:
-                    for ibinshape in range(self.p_nbinshape_gen):
-                            print(ibin2, ibinshape, tgsys_cat[ibin2][sys_cat].GetErrorY(ibinshape))
                 setup_tgraph(tgsys_cat[ibin2][sys_cat], get_colour(sys_cat + 1, 0))
                 tgsys_cat[ibin2][sys_cat].SetTitle("")
                 tgsys_cat[ibin2][sys_cat].SetLineWidth(3)
